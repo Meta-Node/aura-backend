@@ -19,6 +19,7 @@ function loginUser(username, password) {
     if (password == null) {
       throw new Error("Missing password in body")
     }
+
 }
 
 module.exports = router;
