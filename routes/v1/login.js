@@ -7,7 +7,8 @@ const {
     pullFromNetwork,
     pullDecryptedUserData,
     generateKey, pullProfilePhoto
-} = require("./authUtils");
+} = require("../../src/utils/authUtils");
+const {getRatings} = require("../../src/controllers/ratingController");
 var router = express.Router();
 const usernameParam = "explorer_code";
 const passwordParam = "password"
@@ -17,11 +18,10 @@ router.post('/', async function (req, res, next) {
     let data = await loginUser(body[usernameParam], body[passwordParam]);
     res.cookie("brightId", data['brightId'], {signed: true})
     res.cookie("password", data["password"], {signed: true})
-
     res.json({
         "name": data.userData.name,
         "photo": data.photo,
-        "score": "score"
+        "score": await getRatings(data['brightId'])
     })
 });
 
