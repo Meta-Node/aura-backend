@@ -18,10 +18,11 @@ router.post('/', async function (req, res, next) {
     let data = await loginUser(body[usernameParam], body[passwordParam]);
     res.cookie("brightId", data['brightId'], {signed: true})
     res.cookie("password", data["password"], {signed: true})
+    let scores = await await getRatings(data['brightId'])["rows"]
     res.json({
         "name": data.userData.name,
         "photo": data.photo,
-        "score": await getRatings(data['brightId'])
+        "score": calculateScore(scores)
     })
 });
 
@@ -37,21 +38,30 @@ async function loginUser(username, password) {
 
     try {
         const key = generateKey(brightId, password)
-        let brightIdChunk = pullFromNetwork(brightId)
+        let brightIdChunk = await pullFromNetwork(brightId)
         let decryptedUserData = pullDecryptedUserData(key, password)
         let photoLink = await pullProfilePhoto(key, brightId, password)
 
-            //in the future we may want to consider caching the decryptedUserData
-            data = {
-                'userData': (await decryptedUserData).userData,
-                'brightId': brightId,
-                'password': password,
-                'photo': photoLink
-            }
+        x = await decryptedUserData
+        //in the future we may want to consider caching the decryptedUserData
+        data = {
+            'userData': (await decryptedUserData).userData,
+            'brightId': brightId,
+            'password': password,
+            'photo': photoLink
+        }
         return data
     } catch (e) {
         console.log(e)
         throw new Error("Could not login in user, please check username/password")
+    }
+}
+
+function calculateScore(scores) {
+    if (!scores) {
+        return []
+    } else {
+        return scores
     }
 }
 
