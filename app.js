@@ -11,7 +11,7 @@ const {json} = require("express");
 var app = express();
 
 app.use(cors({
-    origin: '*:*',
+    origin: '*',
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
     credentials: true
 }));
