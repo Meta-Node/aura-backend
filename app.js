@@ -11,7 +11,7 @@ const {json} = require("express");
 var app = express();
 
 
-var allowedOrigins = ['http://localhost:3001',
+var allowedOrigins = ['localhost:3001',
     'aura.brightid.org'];
 app.use(cors({
     origin: function(origin, callback){
