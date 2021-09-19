@@ -10,14 +10,6 @@ var ratingsRouter = require('./routes/v1/ratings')
 const {json} = require("express");
 var app = express();
 
-//CORS middleware
-var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', 'example.com');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-
-    next();
-}
 
 var corsOptions = {
     credentials: true,
@@ -30,7 +22,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser(process.env.SECRET));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(allowCrossDomain);
+
+app.all('/*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
+});
+
 app.use('/v1/login', loginRouter);
 app.use('/v1/connections', connectionsRouter);
 app.use('/v1/ratings', ratingsRouter);
