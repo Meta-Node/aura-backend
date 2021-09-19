@@ -12,7 +12,8 @@ var app = express();
 
 var corsOptions = {
     credentials: true,
-    origin: true
+    origin: true,
+    "preflightContinue": true
 };
 app.use(cors(corsOptions));
 app.options('*', cors())
