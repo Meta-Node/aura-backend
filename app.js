@@ -10,11 +10,10 @@ var ratingsRouter = require('./routes/v1/ratings')
 const {json} = require("express");
 var app = express();
 
-app.use(cors({
+var corsOptions = {
     origin: '*',
-    methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
-    credentials: true
-}));
+    credentials: true };
+app.use(cors(corsOptions));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
