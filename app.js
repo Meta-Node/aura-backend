@@ -11,12 +11,13 @@ const {json} = require("express");
 var app = express();
 
 var corsOptions = {
-    origin: '*',
-    credentials: true };
+    credentials: true,
+    origin: true
+};
 app.use(cors(corsOptions));
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser(process.env.SECRET));
 app.use(express.static(path.join(__dirname, 'public')));
 
