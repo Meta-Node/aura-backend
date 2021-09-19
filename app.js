@@ -15,7 +15,7 @@ var app = express();
 let whitelist = ['http://localhost:3001', 'https://aura.brightid.org/']
 
 app.use(function(req, res, next) {
-    res.setHeader("Access-Control-Allow-Origin", req.get('origin')); // update to match the domain you will make the request from
+    res.setHeader("Access-Control-Allow-Origin", 'localhost:3001'); // update to match the domain you will make the request from
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
     res.setHeader("Access-Control-Allow-Credentials", true)
