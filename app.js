@@ -14,19 +14,12 @@ var app = express();
 
 let whitelist = ['http://localhost:3001', 'https://aura.brightid.org/']
 
-app.use(cors({
-    origin: function(origin, callback){
-        // allow requests with no origin
-        if(!origin) return callback(null, true);
-        if(whitelist.indexOf(origin) === -1){
-            var message = 'The CORS policy for this origin does not ' +
-            'allow access from the particular origin.';
-            return callback(new Error(message), false);
-        }
-        return callback(null, true);
-    },
-    credentials: true
-}));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", req.headers.origin); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Credentials", "true")
+    next();
+});
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
