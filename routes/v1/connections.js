@@ -4,15 +4,21 @@ const {getRatings, getRatedById} = require("../../src/controllers/ratingControll
 var router = express.Router();
 
 const DEFAULT_LIMIT = 10
+
+function validateTokens(req) {
+    if (req.signedCookies.brightId === undefined || req.signedCookies.password === undefined) {
+        throw new Error("Missing signed cookies")
+    }
+}
+
 /**
  * gets all connections under a given bright id
  */
 router.get('/', async function (req, res, next) {
+    validateTokens(req)
+
     let brightId = req.signedCookies.brightId
     let password = req.signedCookies.password
-    if (brightId === undefined || password === undefined) {
-        throw new Error("Missing signed cookies")
-    }
 
     let page = req.query.page && req.query.page > 0 ? req.query.page - 1 : 0;
     let limit = req.query.limit ? req.query.limit : DEFAULT_LIMIT;
@@ -34,7 +40,7 @@ router.get('/', async function (req, res, next) {
         .filter(e => !reviewedIds.includes(e.id))
         .slice(startingIndex, endingIndex)
         .map(connection => {
-            photoArray.push(pullProfilePhoto(key, connection.id, password))
+                photoArray.push(pullProfilePhoto(key, connection.id, password))
                 return {
                     "brightId": connection.id,
                     "name": connection.name
@@ -53,8 +59,19 @@ router.get('/', async function (req, res, next) {
 /**
  * gets a specific connection
  */
-router.get('/*', function (req, res, next) {
+router.get('/:brightId', function (req, res, next) {
+    connectionId = req.params.brightId
     res.send('respond with a resource');
+
+    validateTokens(req)
+
+    let brightId = req.signedCookies.brightId
+    let password = req.signedCookies.password
+
+    ratings = getRatings(connectionId)
+
+
 });
+
 
 module.exports = router;
