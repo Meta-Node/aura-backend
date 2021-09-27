@@ -19,6 +19,8 @@ package-lock.json
 *.log
 *.gz
 
+# Fuck
+*.env
 
 # Coveralls
 coverage

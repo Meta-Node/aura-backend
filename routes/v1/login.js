@@ -1,6 +1,7 @@
 const AES = require('crypto-js/aes');
 const Utf8 = require('crypto-js/enc-utf8');
 const axios = require("axios")
+var jwt = require('jsonwebtoken');
 var express = require('express');
 const {signedCookie} = require("cookie-parser");
 const {
@@ -16,13 +17,19 @@ const passwordParam = "password"
 router.post('/', async function (req, res, next) {
     let body = req.body;
     let data = await loginUser(body[usernameParam], body[passwordParam]);
-    res.cookie("brightId", data['brightId'], {signed: true})
-    res.cookie("password", data["password"], {signed: true})
+
+    let token = jwt.sign({
+            'brightId': data['brightId'],
+            'password': data['password']
+        }, process.env.SECRET,
+        {expiresIn: '24h'})
+
     let scores = await await getRatings(data['brightId'])["rows"]
     res.json({
         "name": data.userData.name,
         "photo": data.photo,
-        "score": calculateScore(scores)
+        "score": calculateScore(scores),
+        "token": token
     })
 });
 
