@@ -3,7 +3,6 @@ const Utf8 = require('crypto-js/enc-utf8');
 const axios = require("axios")
 var jwt = require('jsonwebtoken');
 var express = require('express');
-const {signedCookie} = require("cookie-parser");
 const {
     pullFromNetwork,
     pullDecryptedUserData,

@@ -16,7 +16,7 @@ router.get('/', authenticateToken, async function (req, res, next) {
 
     let page = req.query.page && req.query.page > 0 ? req.query.page - 1 : 0;
     let limit = req.query.limit ? req.query.limit : DEFAULT_LIMIT;
-    let search = req.query.name ? req.query.name : ""
+    let search = req.query.startsWith ? req.query.startsWith : ""
 
     let includeReviewed = req.query.includeReviewed !== undefined ? req.query.includeReviewed : false
 
