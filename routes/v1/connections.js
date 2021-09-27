@@ -63,7 +63,7 @@ router.get('/:brightId', authenticateToken, function (req, res, next) {
     let brightId = req.authData.brightId
     let password = req.authData.password
 
-    ratings = getRatings(connectionId)
+    ratings = getRatings(connectionId)["rows"]
 });
 
 
