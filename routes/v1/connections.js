@@ -58,12 +58,13 @@ router.get('/', authenticateToken, async function (req, res, next) {
  */
 router.get('/:brightId', authenticateToken, function (req, res, next) {
     connectionId = req.params.brightId
-    res.send('respond with a resource');
+
 
     let brightId = req.authData.brightId
     let password = req.authData.password
 
     ratings = getRatings(connectionId)["rows"]
+    res.json({"ratings": ratings});
 });
 
 
