@@ -30,7 +30,7 @@ router.get('/', authenticateToken, async function (req, res, next) {
 
     let photoArray = []
     let startingIndex = page * limit
-    let endingIndex = startingIndex + limit
+    let endingIndex = startingIndex + +limit
 
     let filteredConnections = await decryptedUserData.connections
         .filter(e => !reviewedIds.includes(e.id))
@@ -54,7 +54,7 @@ router.get('/', authenticateToken, async function (req, res, next) {
 });
 
 /**
- * gets a specific connection
+ * gets a specific connection and yet to be rated randomized connections
  */
 router.get('/:brightId', authenticateToken, function (req, res, next) {
     connectionId = req.params.brightId
