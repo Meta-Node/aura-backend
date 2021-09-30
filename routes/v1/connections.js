@@ -45,11 +45,18 @@ router.get('/', authenticateToken, async function (req, res, next) {
             }
         );
 
-    await Promise.all(photoArray).then(photos => {
+    await Promise.allSettled(photoArray).then(photos => {
         for (let i = 0; i < photos.length; i++) {
-            filteredConnections[i]["photo"] = photos[i]
+            if (photos[i] === "rejected") {
+                filteredConnections[i]["photo"] = null
+            } else {
+                filteredConnections[i]["photo"] = photos[i]["value"]
+            }
         }
     })
+        .catch(
+            err => console.log(err)
+        )
     res.json(filteredConnections)
 });
 
