@@ -11,16 +11,6 @@ function getRatedById(brightId) {
 }
 
 function rateConnection(fromBrightId, toBrightId, rating) {
-    if(rating.size > 5) {
-        throw new Error("Cannot have more than 5 attributes")
-    }
-    let ratings = 0
-    rating.forEach((name, value) => {
-        rating += value
-    })
-    if(rating > 5) {
-        throw new Error("Attributes are greater than 5")
-    }
    return messagesModel.insert(toBrightId, rating, fromBrightId)
 }
 
