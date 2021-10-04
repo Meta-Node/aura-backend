@@ -24,4 +24,4 @@ function rateConnection(fromBrightId, toBrightId, rating) {
    return messagesModel.insert(toBrightId, rating, fromBrightId)
 }
 
-module.exports = {getRatings, getRatedById}
+module.exports = {getRatings, getRatedById, rateConnection}

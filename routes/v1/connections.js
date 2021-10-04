@@ -36,11 +36,11 @@ router.get('/', authenticateToken, async function (req, res, next) {
         .filter(e => !reviewedIds.includes(e.id))
         .filter(e => {
             if(search) {
-                if(e.name.toLowerCase().contains(search.toLowerCase())) {
+                if(e.name.toLowerCase().includes(search.toLowerCase())) {
                     return true
                 }
             }
-            return true
+            return false
         })
         .slice(startingIndex, endingIndex)
         .map(connection => {
