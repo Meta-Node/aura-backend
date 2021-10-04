@@ -28,7 +28,9 @@ router.post('/', async function (req, res, next) {
         "name": data.userData.name,
         "photo": data.photo,
         "score": calculateScore(scores),
-        "token": token
+        "token": token,
+        "connectionsCount": null,
+        "ratingsCount": null
     })
 });
 
