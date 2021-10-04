@@ -34,6 +34,14 @@ router.get('/', authenticateToken, async function (req, res, next) {
 
     let filteredConnections = await decryptedUserData.connections
         .filter(e => !reviewedIds.includes(e.id))
+        .filter(e => {
+            if(search) {
+                if(e.name.toLowerCase().contains(search.toLowerCase())) {
+                    return true
+                }
+            }
+            return true
+        })
         .slice(startingIndex, endingIndex)
         .map(connection => {
                 photoArray.push(pullProfilePhoto(key, connection.id, password))
@@ -63,7 +71,7 @@ router.get('/', authenticateToken, async function (req, res, next) {
 /**
  * gets a specific connection and yet to be rated randomized connections
  */
-router.get('/:brightId', authenticateToken, function (req, res, next) {
+router.get('/:brightId', authenticateToken, async function (req, res, next) {
     connectionId = req.params.brightId
 
 
@@ -71,7 +79,42 @@ router.get('/:brightId', authenticateToken, function (req, res, next) {
     let password = req.authData.password
 
     ratings = getRatings(connectionId)["rows"]
-    res.json({"ratings": ratings});
+
+    let decryptedUserData = pullDecryptedUserData(key, password);
+    let reviewedIds = (await getRatedById(brightId)).rows.map(row => row.brightid);
+
+    let photoArray = [];
+
+    let connections = (await decryptedUserData)
+        .filter(e => !reviewedIds.includes(e.id))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(connection => {
+            photoArray.push(pullProfilePhoto(key, connection.id, password))
+            return {
+                "brightId": connection.id,
+                "name": connection.name,
+                "status": connection.status
+            };
+        })
+
+    await Promise.allSettled(photoArray).then(photos => {
+        for (let i = 0; i < photos.length; i++) {
+            if (photos[i] === "rejected") {
+                connections[i]["photo"] = null
+            } else {
+                connections[i]["photo"] = photos[i]["value"]
+            }
+        }
+    })
+        .catch(
+            err => console.log(err)
+        )
+
+    res.json({
+        "ratings": ratings,
+        "rateNext": connections
+    })
 });
 
 

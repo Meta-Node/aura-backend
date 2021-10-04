@@ -44,17 +44,15 @@ async function loginUser(username, password) {
 
     try {
         const key = generateKey(brightId, password)
-        let brightIdChunk = await pullFromNetwork(brightId)
         let decryptedUserData = pullDecryptedUserData(key, password)
-        let photoLink = await pullProfilePhoto(key, brightId, password)
+        let photoLink =  pullProfilePhoto(key, brightId, password)
 
-        x = await decryptedUserData
         //in the future we may want to consider caching the decryptedUserData
         data = {
             'userData': (await decryptedUserData).userData,
             'brightId': brightId,
             'password': password,
-            'photo': photoLink
+            'photo': await photoLink
         }
         return data
     } catch (e) {
