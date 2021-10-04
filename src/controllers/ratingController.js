@@ -18,7 +18,7 @@ function rateConnection(fromBrightId, toBrightId, rating) {
     rating.forEach((name, value) => {
         rating += value
     })
-    if(values > 5) {
+    if(rating > 5) {
         throw new Error("Attributes are greater than 5")
     }
    return messagesModel.insert(toBrightId, rating, fromBrightId)
