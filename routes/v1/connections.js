@@ -76,14 +76,16 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
     let brightId = req.authData.brightId
     let password = req.authData.password
 
-    ratings = getRatings(connectionId)["rows"]
+    let ratings = (await getRatings(connectionId))["rows"]
 
+    let key = generateKey(brightId, password);
     let decryptedUserData = pullDecryptedUserData(key, password);
     let reviewedIds = (await getRatedById(brightId)).rows.map(row => row.brightid);
 
     let photoArray = [];
 
     let connections = (await decryptedUserData)
+        .connections
         .filter(e => !reviewedIds.includes(e.id))
         .sort(() => Math.random() - 0.5)
         .slice(0, 3)
@@ -109,11 +111,11 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
             err => console.log(err)
         )
 
-    res.json({
+    res.json(({
         "ratings": ratings,
         "rateNext": connections,
-        "hasRated": reviewedIds.contains(connectionId)
-    })
+        "hasRated": reviewedIds.includes(connectionId).toString()
+    }))
 });
 
 
