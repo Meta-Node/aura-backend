@@ -36,11 +36,9 @@ router.get('/', authenticateToken, async function (req, res, next) {
         .filter(e => !reviewedIds.includes(e.id))
         .filter(e => {
             if(search) {
-                if(e.name.toLowerCase().includes(search.toLowerCase())) {
-                    return true
-                }
+                return e.name.toLowerCase().includes(search.toLowerCase());
             }
-            return false
+            return true
         })
         .slice(startingIndex, endingIndex)
         .map(connection => {
@@ -113,7 +111,8 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
 
     res.json({
         "ratings": ratings,
-        "rateNext": connections
+        "rateNext": connections,
+        "hasRated": reviewedIds.contains(connectionId)
     })
 });
 
