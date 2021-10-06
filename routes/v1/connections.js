@@ -18,12 +18,12 @@ router.get('/', authenticateToken, async function (req, res, next) {
     let limit = req.query.limit ? req.query.limit : DEFAULT_LIMIT;
     let search = req.query["startsWith"] && req.query["startsWith"] !== ''? req.query["startsWith"] : undefined
 
-    let includeReviewed = req.query.includeReviewed !== undefined ? req.query.includeReviewed : false
+    let onlyRated = req.query.onlyRated;
 
     let key = generateKey(brightId, password);
     let decryptedUserData = pullDecryptedUserData(key, password);
     let reviewedIds = [];
-    if (!includeReviewed) {
+    if (!onlyRated) {
         reviewedIds = (await getRatedById(brightId)).rows.map(row => row.brightid);
     }
     decryptedUserData = await decryptedUserData;
@@ -33,7 +33,16 @@ router.get('/', authenticateToken, async function (req, res, next) {
     let endingIndex = startingIndex + +limit
 
     let filteredConnections = await decryptedUserData.connections
-        .filter(e => !reviewedIds.includes(e.id))
+        .filter(e => {
+            if(onlyRated === undefined){
+                return true
+            } if(e === false) {
+                !reviewedIds.includes(e.id)
+            } else{
+                return reviewedIds.includes(e.id)
+            }
+
+        })
         .filter(e => {
             if(search) {
                 return e.name.toLowerCase().includes(search.toLowerCase());
