@@ -14,17 +14,19 @@ class Model {
     }
 
     async insert(brightId, score, from_brightId) {
-        const text = 'INSERT INTO rating(brightId, score, from_brightId, date, version) VALUES($1, $2, $3, $4, $5) RETURNING *'
+        const text = 'INSERT INTO ratings(brightId, score, from_brightId, date, version)' +
+            ' VALUES($1, $2, $3, $4, $5) ON CONFLICT (brightid,from_brightid)' +
+            ' DO UPDATE SET score = $2'
 
         return this.pool.query(
             text,
-            {
-                "brightId": brightId,
-                "score": score,
-                "from_brightId": from_brightId,
-                "date": Date.now(),
-                "version": 1
-            });
+            [
+                brightId,
+                score,
+                from_brightId,
+                Date.now(),
+                1
+            ]);
     }
 }
 
