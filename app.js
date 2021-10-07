@@ -6,11 +6,13 @@ var cors = require('cors')
 var loginRouter = require('./routes/v1/login');
 var connectionsRouter = require('./routes/v1/connections');
 var ratingsRouter = require('./routes/v1/ratings')
+var boolParser = require('express-query-boolean');
 const {json} = require("express");
 var app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
+app.use(boolParser());
 app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())

@@ -16,15 +16,15 @@ router.get('/', authenticateToken, async function (req, res, next) {
 
     let page = req.query.page && req.query.page > 0 ? req.query.page - 1 : 0;
     let limit = req.query.limit ? req.query.limit : DEFAULT_LIMIT;
-    let search = req.query["startsWith"] && req.query["startsWith"] !== ''? req.query["startsWith"] : undefined
+    let search = req.query["startsWith"] && req.query["startsWith"] !== '' ? req.query["startsWith"] : undefined
 
     let onlyRated = req.query.onlyRated;
 
     let key = generateKey(brightId, password);
     let decryptedUserData = pullDecryptedUserData(key, password);
     let reviewedIds = [];
-    if (!onlyRated) {
-        reviewedIds = (await getRatedById(brightId)).rows.map(row => row.brightid);
+    if (onlyRated !== undefined) {
+        reviewedIds = (await getRatedById(brightId))["rows"].map(row => row.brightid)
     }
     decryptedUserData = await decryptedUserData;
 
@@ -34,17 +34,18 @@ router.get('/', authenticateToken, async function (req, res, next) {
 
     let filteredConnections = await decryptedUserData.connections
         .filter(e => {
-            if(onlyRated === undefined){
-                return true
-            } if(e === false) {
-                !reviewedIds.includes(e.id)
-            } else{
+            if (onlyRated === false) {
+                return !reviewedIds.includes(e.id)
+            }
+            if (onlyRated === true) {
                 return reviewedIds.includes(e.id)
             }
-
+            if (onlyRated === undefined) {
+                return true
+            }
         })
         .filter(e => {
-            if(search) {
+            if (search !== undefined) {
                 return e.name.toLowerCase().includes(search.toLowerCase());
             }
             return true
@@ -95,7 +96,7 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
 
     let connections = (await decryptedUserData)
         .connections
-        .filter(e => !reviewedIds.includes(e.id))
+        .filter(e => !reviewedIds.includes(e.id) && e !== connectionId)
         .sort(() => Math.random() - 0.5)
         .slice(0, 3)
         .map(connection => {
