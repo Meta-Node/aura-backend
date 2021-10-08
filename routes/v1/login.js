@@ -4,11 +4,10 @@ const axios = require("axios")
 var jwt = require('jsonwebtoken');
 var express = require('express');
 const {
-    pullFromNetwork,
     pullDecryptedUserData,
     generateKey, pullProfilePhoto
 } = require("../../src/utils/authUtils");
-const {getRatings} = require("../../src/controllers/ratingController");
+const {getRatings, getRatedById} = require("../../src/controllers/ratingController");
 var router = express.Router();
 const usernameParam = "explorer_code";
 const passwordParam = "password"
@@ -24,14 +23,14 @@ router.post('/', async function (req, res, next) {
         {expiresIn: '24h'})
 
     let scores = await await getRatings(data['brightId'])["rows"]
-    res.json({
-        "name": data.userData.name,
+    res.json(({
+        "name": data.userData.userData.name,
         "photo": data.photo,
         "score": calculateScore(scores),
         "token": token,
-        "connectionsCount": null,
-        "ratingsCount": null
-    })
+        "connectionsCount": data.userData.connections.length,
+        "ratingsCount": (await getRatedById(data.userData.id))["rows"].length
+    }))
 });
 
 async function loginUser(username, password) {
@@ -51,7 +50,7 @@ async function loginUser(username, password) {
 
         //in the future we may want to consider caching the decryptedUserData
         data = {
-            'userData': (await decryptedUserData).userData,
+            'userData': (await decryptedUserData),
             'brightId': brightId,
             'password': password,
             'photo': await photoLink

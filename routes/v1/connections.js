@@ -96,9 +96,9 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
 
     let connections = (await decryptedUserData)
         .connections
-        .filter(e => !reviewedIds.includes(e.id) && e !== connectionId)
+        .filter(e => !reviewedIds.includes(e.id) && e.id !== connectionId)
         .sort(() => Math.random() - 0.5)
-        .slice(0, 3)
+        .slice(0, 4)
         .map(connection => {
             photoArray.push(pullProfilePhoto(key, connection.id, password))
             return {
