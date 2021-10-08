@@ -22,7 +22,7 @@ router.post('/', async function (req, res, next) {
         }, process.env.SECRET,
         {expiresIn: '24h'})
 
-    let scores = await await getRatings(data['brightId'])["rows"]
+    let scores = (await getRatings(data['brightId']))["rows"]
     res.json(({
         "name": data.userData.userData.name,
         "photo": data.photo,
