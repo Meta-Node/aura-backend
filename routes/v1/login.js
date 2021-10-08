@@ -29,7 +29,7 @@ router.post('/', async function (req, res, next) {
         "score": calculateScore(scores),
         "token": token,
         "connectionsCount": data.userData.connections.length,
-        "ratingsCount": (await getRatedById(data.userData.id))["rows"].length
+        "ratingsCount": (await getRatedById(data.brightId))["rows"].length
     }))
 });
 
