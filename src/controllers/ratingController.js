@@ -14,4 +14,8 @@ function rateConnection(fromBrightId, toBrightId, rating) {
    return messagesModel.insert(toBrightId, rating, fromBrightId)
 }
 
-module.exports = {getRatings, getRatedById, rateConnection}
+function getNumberOfRatingsGiven(fromBightId) {
+    return messagesModel.countRatingsGiven(fromBightId);
+}
+
+module.exports = {getRatings, getRatedById, rateConnection, getNumberOfRatingsGiven}

@@ -1,6 +1,6 @@
 var express = require('express');
 const {generateKey, pullDecryptedUserData, pullProfilePhoto} = require("../../src/utils/authUtils");
-const {getRatings, getRatedById} = require("../../src/controllers/ratingController");
+const {getRatings, getRatedById, getNumberOfRatingsGiven} = require("../../src/controllers/ratingController");
 const {authenticateToken} = require("../../src/utils/tokenHandler");
 var router = express.Router();
 
@@ -87,6 +87,7 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
     let password = req.authData.password
 
     let ratings = (await getRatings(connectionId))["rows"]
+    let ratingsGivenPromise = getNumberOfRatingsGiven(connectionId)
 
     let key = generateKey(brightId, password);
     let decryptedUserData = pullDecryptedUserData(key, password);
@@ -123,6 +124,8 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
 
     res.json(({
         "ratings": ratings,
+        "ratingsRecievedNumber" : ratings.length,
+        "ratingsGivenNumber" : (await ratingsGivenPromise).rows[0],
         "rateNext": connections,
         "hasRated": reviewedIds.includes(connectionId).toString()
     }))
