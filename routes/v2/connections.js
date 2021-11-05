@@ -127,9 +127,7 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
         "ratingsRecievedNumber" : ratings.length,
         "ratingsGivenNumber" : (await ratingsGivenPromise).rows[0],
         "rateNext": connections,
-        "hasRated": reviewedIds.includes(connectionId).toString(),
-        //todo: temporary placeholder rm as soon as you can start passing this
-        "trustScore": 420.69
+        "hasRated": reviewedIds.includes(connectionId).toString()
     }))
 });
 

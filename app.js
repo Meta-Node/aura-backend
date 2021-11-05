@@ -8,7 +8,10 @@ var connectionsRouter = require('./routes/v1/connections');
 var ratingsRouter = require('./routes/v1/ratings')
 var boolParser = require('express-query-boolean');
 const {json} = require("express");
+const {getConnections} = require("./src/utils/nodeUtils");
 var app = express();
+
+// getConnections("_oaMaFNsTMF1PHJUAqpGXCjp41Gr19UyoxO4AZlK6bw").then(r => console.log(r))
 
 app.use(logger('dev'));
 app.use(express.json());
