@@ -7,7 +7,7 @@ const {
     pullDecryptedUserData,
     generateKey, pullProfilePhoto
 } = require("../../src/utils/authUtils");
-const {getRatings, getRatedById} = require("../../src/controllers/ratingController");
+const {getRatingsGivenById, getRatingsForConnection} = require("../../src/utils/nodeUtils");
 var router = express.Router();
 const usernameParam = "explorer_code";
 const passwordParam = "password"
@@ -22,14 +22,15 @@ router.post('/', async function (req, res, next) {
         }, process.env.SECRET,
         {expiresIn: '24h'})
 
-    let scores = (await getRatings(data['brightId']))["rows"]
+    let scores = await getRatingsForConnection(data['brightId'])
+
     res.json(({
         "name": data.userData.userData.name,
         "photo": data.photo,
         "score": calculateScore(scores),
         "token": token,
         "connectionsCount": data.userData.connections.length,
-        "ratingsCount": (await getRatedById(data.brightId))["rows"].length,
+        "ratingsCount": (await getRatingsGivenById(data.brightId)).length,
         //todo: remove placeholder value
         "trustScore": 420.69
     }))
@@ -48,7 +49,7 @@ async function loginUser(username, password) {
     try {
         const key = generateKey(brightId, password)
         let decryptedUserData = pullDecryptedUserData(key, password)
-        let photoLink =  pullProfilePhoto(key, brightId, password)
+        let photoLink = pullProfilePhoto(key, brightId, password)
 
         //in the future we may want to consider caching the decryptedUserData
         data = {

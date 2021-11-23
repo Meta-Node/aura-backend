@@ -1,7 +1,7 @@
 var express = require('express');
 const {generateKey, pullDecryptedUserData, pullProfilePhoto} = require("../../src/utils/authUtils");
-const {getRatings, getRatedById, getNumberOfRatingsGiven} = require("../../src/controllers/ratingController");
 const {authenticateToken} = require("../../src/utils/tokenHandler");
+const {getNonRatedConnectionsPaged, getConnectionsPaged} = require("../../src/utils/nodeUtils");
 var router = express.Router();
 
 const DEFAULT_LIMIT = 10
@@ -18,31 +18,32 @@ router.get('/', authenticateToken, async function (req, res, next) {
     let limit = req.query.limit ? req.query.limit : DEFAULT_LIMIT;
     let search = req.query["startsWith"] && req.query["startsWith"] !== '' ? req.query["startsWith"] : undefined
 
+    let photoArray = []
+    let startingIndex = page * limit
+
     let onlyRated = req.query.onlyRated;
 
     let key = generateKey(brightId, password);
     let decryptedUserData = pullDecryptedUserData(key, password);
-    let reviewedIds = [];
+
+    let brightIds;
+
     if (onlyRated !== undefined) {
-        reviewedIds = (await getRatedById(brightId))["rows"].map(row => row.brightid)
+        brightIds = await getConnectionsPaged(brightId, startingIndex, limit)
+    } else {
+        brightIds = await getNonRatedConnectionsPaged(brightId, startingIndex, limit)
     }
     decryptedUserData = await decryptedUserData;
 
-    let photoArray = []
-    let startingIndex = page * limit
-    let endingIndex = startingIndex + +limit
+    let brightIdNameMap = {}
 
-    let filteredConnections = await decryptedUserData.connections
-        .filter(e => {
-            if (onlyRated === false) {
-                return !reviewedIds.includes(e.id)
-            }
-            if (onlyRated === true) {
-                return reviewedIds.includes(e.id)
-            }
-            if (onlyRated === undefined) {
-                return true
-            }
+    decryptedUserData.connections.forEach(connection => {
+        brightIdNameMap[connection.id] = connection.name
+    })
+
+    let filteredConnections = await brightIds
+        .map(connection => {
+            return connection["name"] = brightIdNameMap[connection._key]
         })
         .filter(e => {
             if (search !== undefined) {
@@ -50,13 +51,12 @@ router.get('/', authenticateToken, async function (req, res, next) {
             }
             return true
         })
-        .slice(startingIndex, endingIndex)
         .map(connection => {
                 photoArray.push(pullProfilePhoto(key, connection.id, password))
                 return {
-                    "brightId": connection.id,
-                    "name": connection.name,
-                    "status": connection.status
+                    "brightId": connection._key,
+                    "status": connection.conn.level,
+                    "name": connection.name
                 };
             }
         );
@@ -124,8 +124,8 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
 
     res.json(({
         "ratings": ratings,
-        "ratingsRecievedNumber" : ratings.length,
-        "ratingsGivenNumber" : (await ratingsGivenPromise).rows[0],
+        "ratingsRecievedNumber": ratings.length,
+        "ratingsGivenNumber": (await ratingsGivenPromise).rows[0],
         "rateNext": connections,
         "hasRated": reviewedIds.includes(connectionId).toString()
     }))
