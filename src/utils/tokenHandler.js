@@ -9,6 +9,8 @@ function authenticateToken(req, res, next) {
         if (err) return res.sendStatus(403)
 
         req.authData = user
+        console.log(token)
+        console.log(user)
 
         next()
     })
