@@ -206,6 +206,34 @@ const getRatingsGivenById = async (brightId) => {
     return x;
 }
 
+
+/**
+ * Get all ratings given by a give brightId
+ * @param brightId
+ * @return {Promise<*[]>}
+ */
+const getRatedById = async (brightId) => {
+    let db = getDbConnection();
+    // brightId = "users/" + brightId
+    let x = []
+    await db.query(
+        'for user in users' +
+        ' for connection in connections' +
+        ' for otherUser in users' +
+        ' FILTER user._key == "' + brightId + '"' +
+        ' AND connection._from == user._id &&' +
+        ' connection.rating != null &&' +
+        ' connection._to == otherUser._id' +
+        ' return otherUser._key').then(
+        cursor => cursor.all()
+    ).then(
+        key => {
+            x = key
+        }
+    );
+    return x;
+}
+
 /**
  * Get all ratings given by a to a brightId
  * @param brightId
@@ -267,5 +295,6 @@ module.exports = {
     getRatingsForConnection,
     getRatingsGivenById,
     getRatings,
-    addRating
+    addRating,
+    getRatedById
 }
