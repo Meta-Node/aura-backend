@@ -19,8 +19,6 @@ const {json} = require("express");
 const {getConnections, getRatingsForConnection, getConnectionsPaged} = require("./src/utils/nodeUtils");
 var app = express();
 
-getConnectionsPaged("Hi7ZTq7U7lBfW2s-vTJeBsY3sEhdCtG3FWWy-fa1AtA", 0, 100).then(r => console.log(r))
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(boolParser());

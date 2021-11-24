@@ -1,7 +1,9 @@
 var express = require('express');
 const {generateKey, pullDecryptedUserData, pullProfilePhoto} = require("../../src/utils/authUtils");
 const {authenticateToken} = require("../../src/utils/tokenHandler");
-const {getNonRatedConnectionsPaged, getConnectionsPaged} = require("../../src/utils/nodeUtils");
+const {getConnectionsPaged, getRatedConnections, getAllConnections, getRatings, getRatingsGivenById,
+    getNonRatedConnectionsPaged
+} = require("../../src/utils/nodeUtils");
 var router = express.Router();
 
 const DEFAULT_LIMIT = 10
@@ -28,10 +30,16 @@ router.get('/', authenticateToken, async function (req, res, next) {
 
     let brightIds;
 
-    if (onlyRated !== undefined) {
-        brightIds = await getConnectionsPaged(brightId, startingIndex, limit)
+    if (search !== undefined) {
+        brightIds = await getAllConnections(brightId)
+    } else if (onlyRated !== undefined) {
+        if (onlyRated) {
+            brightIds = await getRatedConnections(brightId, startingIndex, limit)
+        } else {
+            brightIds = await getNonRatedConnectionsPaged(brightId, startingIndex, limit)
+        }
     } else {
-        brightIds = await getNonRatedConnectionsPaged(brightId, startingIndex, limit)
+        brightIds = await getConnectionsPaged(brightId, startingIndex, limit)
     }
     decryptedUserData = await decryptedUserData;
 
@@ -41,9 +49,10 @@ router.get('/', authenticateToken, async function (req, res, next) {
         brightIdNameMap[connection.id] = connection.name
     })
 
-    let filteredConnections = await brightIds
+    let filteredConnections = brightIds
         .map(connection => {
-            return connection["name"] = brightIdNameMap[connection._key]
+            connection["name"] = brightIdNameMap[connection._key]
+            return connection
         })
         .filter(e => {
             if (search !== undefined) {
@@ -52,7 +61,7 @@ router.get('/', authenticateToken, async function (req, res, next) {
             return true
         })
         .map(connection => {
-                photoArray.push(pullProfilePhoto(key, connection.id, password))
+                photoArray.push(pullProfilePhoto(key, connection._key, password))
                 return {
                     "brightId": connection._key,
                     "status": connection.conn.level,
@@ -86,26 +95,33 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
     let brightId = req.authData.brightId
     let password = req.authData.password
 
-    let ratings = (await getRatings(connectionId))["rows"]
-    let ratingsGivenPromise = getNumberOfRatingsGiven(connectionId)
+    let ratings = (await getRatings(connectionId))
+    let ratingsGiven = (await getRatingsGivenById(connectionId)).length
 
     let key = generateKey(brightId, password);
-    let decryptedUserData = pullDecryptedUserData(key, password);
-    let reviewedIds = (await getRatedById(brightId)).rows.map(row => row.brightid);
+    let decryptedUserData = await pullDecryptedUserData(key, password);
+    let reviewedIds = (await getRatingsGivenById(brightId)).map(connection => connection._key)
+
+    let brightIdNameMap = {};
+    decryptedUserData.connections.forEach(connection => {
+        brightIdNameMap[connection.id] = connection.name
+    })
 
     let photoArray = [];
 
-    let connections = (await decryptedUserData)
-        .connections
-        .filter(e => !reviewedIds.includes(e.id) && e.id !== connectionId)
+    let connections = (await getNonRatedConnectionsPaged(brightId, 0, 100))
+        .map(connection => {
+            connection["name"] = brightIdNameMap[connection._key]
+            return connection
+        })
         .sort(() => Math.random() - 0.5)
         .slice(0, 4)
         .map(connection => {
-            photoArray.push(pullProfilePhoto(key, connection.id, password))
+            photoArray.push(pullProfilePhoto(key, connection._key, password))
             return {
-                "brightId": connection.id,
+                "brightId": connection._key,
                 "name": connection.name,
-                "status": connection.status
+                "status": connection.conn.level
             };
         })
 
@@ -125,7 +141,7 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
     res.json(({
         "ratings": ratings,
         "ratingsRecievedNumber": ratings.length,
-        "ratingsGivenNumber": (await ratingsGivenPromise).rows[0],
+        "ratingsGivenNumber": ratingsGiven,
         "rateNext": connections,
         "hasRated": reviewedIds.includes(connectionId).toString()
     }))
