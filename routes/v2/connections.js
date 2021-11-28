@@ -55,8 +55,10 @@ router.get('/', authenticateToken, async function (req, res, next) {
             return connection
         })
         .filter(e => {
-            if (search !== undefined) {
+            if (e.name && search !== undefined) {
                 return e.name.toLowerCase().includes(search.toLowerCase());
+            } else if (!e.name && search !== undefined) {
+                return false
             }
             return true
         })
