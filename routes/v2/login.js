@@ -7,7 +7,7 @@ const {
     pullDecryptedUserData,
     generateKey, pullProfilePhoto
 } = require("../../src/utils/authUtils");
-const {getRatingsGivenById, getRatingsForConnection} = require("../../src/utils/nodeUtils");
+const {getRatingsGivenById, getRatingsRecievedForConnection} = require("../../src/utils/nodeUtils");
 var router = express.Router();
 const usernameParam = "explorer_code";
 const passwordParam = "password"
@@ -22,7 +22,7 @@ router.post('/', async function (req, res, next) {
         }, process.env.SECRET,
         {expiresIn: '24h'})
 
-    let scores = await getRatingsForConnection(data['brightId'])
+    let scores = await getRatingsRecievedForConnection(data['brightId'])
 
     res.json(({
         "name": data.userData.userData.name,

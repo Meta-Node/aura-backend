@@ -13,10 +13,10 @@ var ratingsRouter = require('./routes/v1/ratings')
 var loginRouterV2 = require('./routes/v2/login');
 var connectionsRouterV2 = require('./routes/v2/connections');
 var ratingsRouterV2 = require('./routes/v2/ratings')
+var dashboardRouterV2 = require('./routes/v2/dashboard')
 
 var boolParser = require('express-query-boolean');
 const {json} = require("express");
-const {getConnections, getRatingsForConnection, getConnectionsPaged} = require("./src/utils/nodeUtils");
 var app = express();
 
 app.use(logger('dev'));
@@ -32,5 +32,6 @@ app.use('/v1/ratings', ratingsRouter);
 app.use('/v2/login', loginRouterV2);
 app.use('/v2/connections', connectionsRouterV2);
 app.use('/v2/ratings', ratingsRouterV2);
+app.use('/v2/dashboard', dashboardRouterV2)
 
 module.exports = app;
