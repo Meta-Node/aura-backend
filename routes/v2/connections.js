@@ -2,7 +2,8 @@ var express = require('express');
 const {generateKey, pullDecryptedUserData, pullProfilePhoto} = require("../../src/utils/authUtils");
 const {authenticateToken} = require("../../src/utils/tokenHandler");
 const {getConnectionsPaged, getRatedConnections, getAllConnections, getRatings, getRatingsGivenById,
-    getNonRatedConnectionsPaged, getRatedById
+    getNonRatedConnectionsPaged, getRatedById, addNickname, getRatingsGivenForConnection,
+    getRatingsRecievedForConnection, getOldRating
 } = require("../../src/utils/nodeUtils");
 var router = express.Router();
 
@@ -91,7 +92,6 @@ router.get('/', authenticateToken, async function (req, res, next) {
 router.get('/:brightId', authenticateToken, async function (req, res, next) {
     connectionId = req.params.brightId
 
-
     let brightId = req.authData.brightId
     let password = req.authData.password
 
@@ -102,10 +102,14 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
     let decryptedUserData = await pullDecryptedUserData(key, password);
     let reviewedIds = (await getRatedById(brightId))
 
+    let oldRating = getOldRating(brightId, connectionId)
+
     let brightIdNameMap = {};
     decryptedUserData.connections.forEach(connection => {
         brightIdNameMap[connection.id] = connection.name
     })
+
+    let availableEnergy = await getAvailableEnergy(brightId);
 
     let photoArray = [];
 
@@ -139,6 +143,8 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
         )
 
     res.json(({
+        "oldRating": await oldRating,
+        "availableEnergy": availableEnergy,
         "ratings": ratings,
         "ratingsRecievedNumber": ratings.length,
         "ratingsGivenNumber": ratingsGiven,
@@ -147,5 +153,28 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
     }))
 });
 
+/**
+ * For upserting the nickname of a connection
+ */
+router.post("/update-nickname", authenticateToken, async function (req, res, next) {
+    let brightId = req.authData.brightId
+    let password = req.authData.password
 
+    let nickname = req.body.nickname
+
+    await addNickname(brightId, nickname);
+});
+
+async function getAvailableEnergy(brightId) {
+    let energyIn = (await getRatingsRecievedForConnection(brightId))
+        .filter(score => score.energyTransfer)
+        .map(score => score.energyTransfer)
+        .reduce((x,y) => x + y, 0)
+    let energyOut = (await getRatingsGivenForConnection(brightId))
+        .filter(score => score.energyTransfer)
+        .map(score => score.energyTransfer)
+        .reduce((x,y) => x + y, 0)
+
+    return Math.max(energyIn - energyOut, 0)
+}
 module.exports = router;

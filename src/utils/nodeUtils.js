@@ -159,11 +159,63 @@ const getNonRatedConnectionsPaged = async (brightId, offset, limit) => {
 }
 
 /**
- * Gets all ratings given by a single brightId
+ *
+ */
+const getRating = async (fromBrightId, toBrightId) => {
+    let db = getDbConnection();
+    // brightId = "users/" + brightId
+    let x = []
+    await db.query(
+        'for user in users' +
+        ' for connection in connections' +
+        ' for otherUser in users' +
+        ' FILTER user._key == "' + fromBrightId + '"' +
+        ' && otherUser._key == "' + toBrightId + '"' +
+        ' && connection._from == user._id' +
+        ' && connection._to == otherUser._id' +
+        ' && connection.rating != null' +
+        ' return connection.rating').then(
+        cursor => cursor.all()
+    ).then(
+        key => {
+            x = key
+        }
+    );
+    return x;
+}
+
+/**
+ *
+ */
+const getOldRating = async (fromBrightId, toBrightId) => {
+    let db = getDbConnection();
+    // brightId = "users/" + brightId
+    let x = []
+    await db.query(
+        'for user in users' +
+        ' for connection in connections' +
+        ' for otherUser in users' +
+        ' FILTER user._key == "' + fromBrightId + '"' +
+        ' && otherUser._key == "' + toBrightId + '"' +
+        ' && connection._from == user._id' +
+        ' && connection._to == otherUser._id' +
+        ' && connection.rating != null' +
+        ' return connection.oldRating').then(
+        cursor => cursor.all()
+    ).then(
+        key => {
+            x = key
+        }
+    );
+    return x;
+}
+
+/**
+ * Gets all ratings recieved by a single brightId
  * @param brightId
  * @return {Promise<*[]>}
  */
-const getRatingsForConnection = async (brightId) => {
+const getRatingsRecievedForConnection = async (brightId) => {
     let db = getDbConnection();
     // brightId = "users/" + brightId
     let x = []
@@ -172,6 +224,30 @@ const getRatingsForConnection = async (brightId) => {
         ' for connection in connections' +
         ' FILTER user._key == "' + brightId + '"' +
         ' AND connection._to == user._id && connection.rating != null' +
+        ' return connection.rating').then(
+        cursor => cursor.all()
+    ).then(
+        key => {
+            x = key
+        }
+    );
+    return x;
+}
+
+/**
+ * Gets all ratings given by a single brightId
+ * @param brightId
+ * @return {Promise<*[]>}
+ */
+const getRatingsGivenForConnection = async (brightId) => {
+    let db = getDbConnection();
+    // brightId = "users/" + brightId
+    let x = []
+    await db.query(
+        'for user in users' +
+        ' for connection in connections' +
+        ' FILTER user._key == "' + brightId + '"' +
+        ' AND connection._from == user._id && connection.rating != null' +
         ' return connection.rating').then(
         cursor => cursor.all()
     ).then(
@@ -261,10 +337,11 @@ const getRatings = async (brightId) => {
 /**
  * adds a rating
  */
-const addRating = async (fromId, toId, rating) => {
+const addRating = async (fromId, toId, rating, oldRating) => {
     let db = getDbConnection();
     // brightId = "users/" + brightId
     rating = JSON.stringify(rating)
+    oldRating = JSON.stringify(oldRating)
     let x = []
     await db.query(
         'for user in users' +
@@ -274,7 +351,25 @@ const addRating = async (fromId, toId, rating) => {
         ' && otherUser._key == "' + toId + '"' +
         ' && connection._from == user._id' +
         ' && connection._to == otherUser._id' +
-        ' UPDATE connection WITH { rating:' + rating + ' } IN connections').then(
+        ' UPDATE connection WITH { rating:' + rating + ', oldRating:' + oldRating +'} IN connections').then(
+
+        cursor => cursor.all()
+    ).then(
+        key => {
+            x = key
+        }
+    );
+    return x;
+}
+
+const addNickname = async (brightId, nickname) => {
+    let db = getDbConnection();
+    // brightId = "users/" + brightId
+    let x = []
+    await db.query(
+        'for user in users' +
+        ' FILTER user._key == "' + brightId + '"' +
+        ' UPDATE connection WITH { nickname:' + nickname + ' } IN users').then(
 
         cursor => cursor.all()
     ).then(
@@ -292,9 +387,13 @@ module.exports = {
     getRatedConnections,
     getNonRatedConnectionsPaged,
     getConnectionsPaged,
-    getRatingsForConnection,
+    getRatingsRecievedForConnection,
+    getRatingsGivenForConnection,
     getRatingsGivenById,
     getRatings,
+    getRating,
     addRating,
-    getRatedById
+    getOldRating,
+    getRatedById,
+    addNickname
 }
