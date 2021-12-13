@@ -17,7 +17,6 @@ var dashboardRouterV2 = require('./routes/v2/dashboard')
 
 var boolParser = require('express-query-boolean');
 const {json} = require("express");
-const {getConnections, getRatingsForConnection, getConnectionsPaged} = require("./src/utils/nodeUtils");
 var app = express();
 
 app.use(logger('dev'));
