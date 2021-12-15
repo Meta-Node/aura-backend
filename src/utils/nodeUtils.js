@@ -258,6 +258,48 @@ const getRatingsGivenForConnection = async (brightId) => {
     return x;
 }
 
+const getInboundConnections = async (brightId) => {
+    let db = getDbConnection();
+    // brightId = "users/" + brightId
+    let x = []
+    await db.query(
+        'for user in users' +
+        ' for connection in connections' +
+        ' for otherUser in users' +
+        ' FILTER user._key == "' + brightId + '"' +
+        ' AND connection._to == user._id && connection.rating != null' +
+        ' AND connection._from == otherUser._id' +
+        ' return merge(otherUser, {conn: connection})').then(
+        cursor => cursor.all()
+    ).then(
+        key => {
+            x = key
+        }
+    );
+    return x;
+}
+
+const getOutboundConnections = async (brightId) => {
+    let db = getDbConnection();
+    // brightId = "users/" + brightId
+    let x = []
+    await db.query(
+        'for user in users' +
+        ' for connection in connections' +
+        ' for otherUser in users' +
+        ' FILTER user._key == "' + brightId + '"' +
+        ' AND connection._from == user._id && connection.rating != null' +
+        ' AND connection._to == otherUser._id' +
+        ' return merge(otherUser, {conn: connection})').then(
+        cursor => cursor.all()
+    ).then(
+        key => {
+            x = key
+        }
+    );
+    return x;
+}
+
 /**
  * Get all ratings given by a give brightId
  * @param brightId
@@ -395,5 +437,7 @@ module.exports = {
     addRating,
     getOldRating,
     getRatedById,
-    addNickname
+    addNickname,
+    getInboundConnections,
+    getOutboundConnections
 }
