@@ -3,7 +3,7 @@ const {generateKey, pullDecryptedUserData, pullProfilePhoto} = require("../../sr
 const {authenticateToken} = require("../../src/utils/tokenHandler");
 const {getConnectionsPaged, getRatedConnections, getAllConnections, getRatings, getRatingsGivenById,
     getNonRatedConnectionsPaged, getRatedById, addNickname, getRatingsGivenForConnection,
-    getRatingsRecievedForConnection, getOldRating
+    getRatingsRecievedForConnection, getOldRating, getRating
 } = require("../../src/utils/nodeUtils");
 var router = express.Router();
 
@@ -104,7 +104,7 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
     let decryptedUserData = await pullDecryptedUserData(key, password);
     let reviewedIds = (await getRatedById(brightId))
 
-    let oldRating = getOldRating(brightId, connectionId)
+    let oldRating = getRating(brightId, connectionId)
 
     let brightIdNameMap = {};
     decryptedUserData.connections.forEach(connection => {
