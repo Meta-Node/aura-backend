@@ -5,6 +5,7 @@ const {getConnectionsPaged, getRatedConnections, getAllConnections, getRatings, 
     getNonRatedConnectionsPaged, getRatedById, addNickname, getRatingsGivenForConnection,
     getRatingsRecievedForConnection, getOldRating, getRating
 } = require("../../src/utils/nodeUtils");
+const {getSparks} = require("../../src/controllers/sparksController");
 var router = express.Router();
 
 const DEFAULT_LIMIT = 10
@@ -112,6 +113,7 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
     })
 
     let availableEnergy = await getAvailableEnergy(brightId);
+    let sparks = (await getSparks(brightId))["rows"]
 
     let photoArray = [];
 
@@ -151,7 +153,8 @@ router.get('/:brightId', authenticateToken, async function (req, res, next) {
         "ratingsRecievedNumber": ratings.length,
         "ratingsGivenNumber": ratingsGiven,
         "rateNext": connections,
-        "hasRated": reviewedIds.includes(connectionId).toString()
+        "hasRated": reviewedIds.includes(connectionId).toString(),
+        "flavors": sparks
     }))
 });
 
