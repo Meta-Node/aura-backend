@@ -34,6 +34,7 @@ const getDashboard = async (brightId, key, password) => {
     let returnComposites = []
     let energies = new Map();
     sparks.map(spark => {
+        spark.amount = parseInt(spark.amount)
         if(!energies.has(spark.energytype)) {
             energies.set(spark.energytype, [spark])
         } else {
@@ -45,8 +46,14 @@ const getDashboard = async (brightId, key, password) => {
         let energyComp = 0;
         value.forEach(spark => energyComp += spark.amount);
         if(energyComp >= IGNITION) {
-            returnComposites.push.apply(returnComposites, value)
+            sp = value[0];
+            ret = {
+                "energytype": sp.energytype,
+                "amount": energyComp
+            }
+            returnComposites.push(ret)
         } else {
+
             returnSparks.push.apply(returnSparks, value);
         }
     })
