@@ -8,6 +8,9 @@ const {
 } = require("../../src/utils/nodeUtils");
 const {pullProfilePhoto, generateKey, pullDecryptedUserData} = require("../../src/utils/authUtils");
 const {getSparks} = require("../../src/controllers/sparksController");
+
+const IGNITION = 100;
+
 var router = express.Router();
 
 router.get('/', authenticateToken, async function (req, res, next) {
@@ -25,27 +28,35 @@ router.get('/', authenticateToken, async function (req, res, next) {
 })
 
 const getDashboard = async (brightId, key, password) => {
-    let composite = await getAvailableEnergy(brightId);
     let sparks = (await getSparks(brightId))["rows"]
 
+    let returnSparks = []
+    let returnComposites = []
+    let energies = {}
+    sparks.map(spark => {
+        if(!energies[spark.energyType]) {
+            energies[spark.energyType] = [spark]
+        } else {
+            energies[spark.energyType].push(spark)
+        }
+    })
+
+    energies.forEach((value, key) => {
+        let energyComp = 0;
+        value.forEach(spark => energyComp += spark.amount);
+        if(energyComp >= IGNITION) {
+            returnComposites.push.apply(returnComposites, value)
+        } else {
+            returnSparks.push.apply(returnSparks, value);
+        }
+    })
+
     return {
-        "composite": composite,
-        "sparks": sparks
+        "composite": returnComposites,
+        "sparks": returnSparks
     }
 }
 
-async function getAvailableEnergy(brightId) {
-    let energyIn = (await getRatingsRecievedForConnection(brightId))
-        .filter(score => score.energyTransfer)
-        .map(score => score.energyTransfer)
-        .reduce((x,y) => x + y, 0)
-    let energyOut = (await getRatingsGivenForConnection(brightId))
-        .filter(score => score.energyTransfer)
-        .map(score => score.energyTransfer)
-        .reduce((x,y) => x + y, 0)
-
-    return Math.max(energyIn - energyOut, 0)
-}
 
 
 module.exports = router;
