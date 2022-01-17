@@ -32,12 +32,12 @@ const getDashboard = async (brightId, key, password) => {
 
     let returnSparks = []
     let returnComposites = []
-    let energies = {}
+    let energies = new Map();
     sparks.map(spark => {
-        if(!energies[spark.energyType]) {
-            energies[spark.energyType] = [spark]
+        if(!energies.has(spark.energytype)) {
+            energies.set(spark.energytype, [spark])
         } else {
-            energies[spark.energyType].push(spark)
+            energies.set(spark.energytype, (energies.get(spark.energytype)).push(spark))
         }
     })
 
