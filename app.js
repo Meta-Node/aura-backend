@@ -4,8 +4,7 @@ var path = require('path');
 var logger = require('morgan');
 var cors = require('cors')
 
-//v1
-// var connectionRouter = require('./routes/v1/login');
+var connectionRouter = require('./routes/v1/connect');
 
 var boolParser = require('express-query-boolean');
 const {json} = require("express");
