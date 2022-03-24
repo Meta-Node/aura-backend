@@ -5,17 +5,7 @@ var logger = require('morgan');
 var cors = require('cors')
 
 //v1
-var loginRouter = require('./routes/v1/login');
-var connectionsRouter = require('./routes/v1/connections');
-var ratingsRouter = require('./routes/v1/ratings')
-
-//v2
-var loginRouterV2 = require('./routes/v2/login');
-var connectionsRouterV2 = require('./routes/v2/connections');
-var ratingsRouterV2 = require('./routes/v2/ratings')
-var dashboardRouterV2 = require('./routes/v2/dashboard')
-var dashboardRouterV3 = require('./routes/v3/dashboard')
-var flavorRouterV3 = require('./routes/v3/flavors')
+// var connectionRouter = require('./routes/v1/login');
 
 var boolParser = require('express-query-boolean');
 const {json} = require("express");
@@ -28,15 +18,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())
 
-app.use('/v1/login', loginRouter);
-app.use('/v1/connections', connectionsRouter);
-app.use('/v1/ratings', ratingsRouter);
-app.use('/v2/login', loginRouterV2);
-app.use('/v2/connections', connectionsRouterV2);
-app.use('/v2/ratings', ratingsRouterV2);
-app.use('/v2/dashboard', dashboardRouterV2)
-app.use('/v3/dashboard', dashboardRouterV3)
-app.use('/v3/flavors', flavorRouterV3)
+// app.use('/v1/connect', connectionRouter);
 
 
 module.exports = app;
