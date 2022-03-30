@@ -17,22 +17,6 @@ class Model {
         let query = 'SELECT COUNT(*) FROM ' + this.table + ' where from_brightId = $1'
         return this.pool.query(query, [fromBrightId]);
     }
-
-    async insert(brightId, score, from_brightId) {
-        const text = 'INSERT INTO ratings(brightId, score, from_brightId, date, version)' +
-            ' VALUES($1, $2, $3, $4, $5) ON CONFLICT (brightid,from_brightid)' +
-            ' DO UPDATE SET score = $2'
-
-        return this.pool.query(
-            text,
-            [
-                brightId,
-                score,
-                from_brightId,
-                Date.now(),
-                1
-            ]);
-    }
 }
 
 module.exports = Model
