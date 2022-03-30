@@ -6,8 +6,6 @@ router.post('/', async function (req, res, next) {
     let toBrightId = req.body.toBrightId;
     let encryptedNickname = req.body.encryptedNickname
 
-
-
 });
 
 module.exports = router;
