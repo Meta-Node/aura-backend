@@ -1,5 +1,4 @@
 const Model = require('../models/model')
-const {values} = require("pg/lib/native/query");
 const keysModel = new Model('brightIdKeys');
 
 async function persistSigningKey(brightId, signingKey) {

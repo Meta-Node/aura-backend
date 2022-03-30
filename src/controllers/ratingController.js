@@ -18,4 +18,11 @@ function getNumberOfRatingsGiven(fromBightId) {
     return messagesModel.countRatingsGiven(fromBightId);
 }
 
-module.exports = {getRatings, getRatedById, rateConnection, getNumberOfRatingsGiven}
+function getRating(fromBrightId, toBrightId) {
+    return messagesModel.pool.query(
+        'SELECT * from "ratings" WHERE "fromBrightId" = $1 AND "toBrightId" = $2',
+        [fromBrightId, toBrightId]
+    )
+}
+
+module.exports = {getRatings, getRatedById, rateConnection, getNumberOfRatingsGiven, getRating}

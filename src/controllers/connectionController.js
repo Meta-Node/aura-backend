@@ -21,10 +21,34 @@ const getConnections = async (brightId) => {
     let x = []
     await db.query(
         'for user in users' +
-        ' for connection in connections' +
         ' FILTER user._key == "' + brightId + '"' +
-        ' && connection._from == user._id' +
+        ' for connection in connections' +
+        ' AND connection._from == user._id' +
         ' return merge(user, {conn: connection})').then(
+        cursor => cursor.all()
+    ).then(
+        key => {
+            x = key
+        },
+        //key => passworddb = key,
+        err => console.error('Failed to execute query')
+    );
+    return x;
+}
+
+const getConnection = async (fromBrightId, toBrightId) => {
+    let db = getDbConnection();
+    // brightId = "users/" + brightId
+    let x = []
+    await db.query(
+        'for user in users \n' +
+        'FILTER user._key == "'+ fromBrightId +'" \n' +
+        'for connection in connections\n' +
+        'FILTER connection._from == user._id\n' +
+        'for otherUser in users\n' +
+        'FILTER otherUser._key == "' + toBrightId + '" \n' +
+        'FILTER connection._to == otherUser._id\n' +
+        'return merge(otherUser, {conn: connection})\n').then(
         cursor => cursor.all()
     ).then(
         key => {
@@ -426,18 +450,5 @@ const addNickname = async (brightId, nickname) => {
 module.exports = {
     getConnections,
     getAllConnections,
-    getRatedConnections,
-    getNonRatedConnectionsPaged,
-    getConnectionsPaged,
-    getRatingsRecievedForConnection,
-    getRatingsGivenForConnection,
-    getRatingsGivenById,
-    getRatings,
-    getRating,
-    addRating,
-    getOldRating,
-    getRatedById,
-    addNickname,
-    getInboundConnections,
-    getOutboundConnections
+    getConnection
 }
