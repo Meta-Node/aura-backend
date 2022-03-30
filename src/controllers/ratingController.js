@@ -6,6 +6,13 @@ async function getRatings(brightId) {
     return await messagesModel.select('score', ` WHERE ratings.brightid = '${brightId}'`);
 }
 
+async function getConnectionsRated(brightId) {
+    return await messagesModel.pool.query(
+        'SELECT "toBrightId" from ratings WHERE "fromBrightId" = $1',
+        [brightId]
+    )
+}
+
 function getRatedById(brightId) {
     return messagesModel.select('brightid', ` WHERE ratings.from_brightid = '${brightId}'`)
 }

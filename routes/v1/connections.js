@@ -15,7 +15,6 @@ router.get('/:fromBrightId/:toBrightId', async function (req, res, next) {
 
     res.json({
         previousRating: rating[0],
-
     })
 });
 
