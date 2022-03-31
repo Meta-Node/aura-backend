@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "migrate": "node-pg-migrate",
     "run-migration": "PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized",
-    "heroku-postbuild" :"PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized"
+    "heroku-postbuild": "PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized"
   },
   "dependencies": {
     "arangojs": "^7.6.1",
@@ -21,6 +21,7 @@
     "morgan": "~1.9.1",
     "node-pg-migrate": "^6.2.1",
     "pg": "^8.7.3",
-    "pg-pool": "^3.4.1"
+    "pg-pool": "^3.4.1",
+    "shuffle-seed": "^1.1.6"
   }
 }

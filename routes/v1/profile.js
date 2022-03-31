@@ -4,5 +4,4 @@ const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 
 router.post('/:brightId', validateAuraPlayer, async function (req, res, next) {
     let fromBrightId = req.params.brightId;
-
 });

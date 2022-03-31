@@ -23,7 +23,7 @@ const getConnections = async (brightId) => {
         'for user in users' +
         ' FILTER user._key == "' + brightId + '"' +
         ' for connection in connections' +
-        ' AND connection._from == user._id' +
+        ' FILTER connection._from == user._id' +
         ' return merge(user, {conn: connection})').then(
         cursor => cursor.all()
     ).then(

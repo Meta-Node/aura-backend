@@ -13,15 +13,15 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
     let fromBrightId = req.params.fromBrightId;
     let publicKey = req.body.signingKey
 
-    let decryptedJson = undefined;
-    try {
-        decryptedJson = JSON.parse(crypto.AES.decrypt(req.body, publicKey).toString(Utf8))
-    } catch (exception) {
-        res.status(500).send("Could not decrypt using publicKey: " + publicKey)
-    }
-    if (decryptedJson === undefined || decryptedJson == null) {
-        res.status(500).send("decryption issues: " + publicKey);
-    }
+    let decryptedJson = req.body;
+    // try {
+    //     decryptedJson = JSON.parse(crypto.AES.decrypt(req.body, publicKey).toString(Utf8))
+    // } catch (exception) {
+    //     res.status(500).send("Could not decrypt using publicKey: " + publicKey)
+    // }
+    // if (decryptedJson === undefined || decryptedJson == null) {
+    //     res.status(500).send("decryption issues: " + publicKey);
+    // }
 
     let energy = 0;
     let energyAggregate = decryptedJson.transfers

@@ -7,6 +7,7 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (re
     let fromBrightId = req.params.fromBrightId;
     let toBrightId = req.params.toBrightId;
     let encryptedNickname = req.body.encryptedNickname
+    let signingKey = req.body.signingKey
 
     let connection = (await getConnection(fromBrightId, toBrightId))[0];
     if(connection === undefined) {

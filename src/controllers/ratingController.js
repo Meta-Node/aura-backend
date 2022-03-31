@@ -31,4 +31,4 @@ function getRating(fromBrightId, toBrightId) {
     )
 }
 
-module.exports = {getRatings, rateConnection, getNumberOfRatingsGiven, getRating}
+module.exports = {getConnectionsRated, rateConnection, getNumberOfRatingsGiven, getRating}

@@ -14,5 +14,9 @@ async function getEnergy(fromBrightId) {
     return messagesModel.pool.query('SELECT "toBrightId", amount from "energyTransfer" WHERE "fromBrightId" = $1', [fromBrightId]);
 }
 
+async function getSpecificEnergy(fromBrightId, toBrightId) {
+    return messagesModel.pool.query('SELECT amount from "energyTransfer" WHERE "fromBrightId" = $1 AND "toBrightId" = $2', [fromBrightId, toBrightId]);
+}
 
-module.exports = {clearEnergyForBrightId, addEnergyTransfer, getEnergy}
+
+module.exports = {clearEnergyForBrightId, addEnergyTransfer, getEnergy, getSpecificEnergy}
