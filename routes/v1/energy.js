@@ -24,7 +24,7 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
     // }
 
     let energy = 0;
-    let energyAggregate = decryptedJson.transfers
+    decryptedJson.transfers
         .map(t => t.amount)
         .forEach(t => energy+=t)
 
@@ -34,7 +34,7 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
 
     let promises = []
 
-    clearEnergyForBrightId(fromBrightId)
+    await clearEnergyForBrightId(fromBrightId)
     decryptedJson.transfers.forEach(transfer => {
             promises.push(addEnergyTransfer(transfer.toBrightId, fromBrightId, transfer.amount))
             promises.push(persistToLog(
