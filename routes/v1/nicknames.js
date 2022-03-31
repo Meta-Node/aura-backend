@@ -1,8 +1,9 @@
 var express = require('express');
 const {getConnection} = require("../../src/controllers/connectionController");
+const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 var router = express.Router();
 
-router.post('/:fromBrightId/:toBrightId', async function (req, res, next) {
+router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (req, res, next) {
     let fromBrightId = req.params.fromBrightId;
     let toBrightId = req.params.toBrightId;
     let encryptedNickname = req.body.encryptedNickname

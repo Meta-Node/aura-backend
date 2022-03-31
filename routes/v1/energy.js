@@ -6,15 +6,12 @@ const Utf8 = require("crypto-js/enc-utf8");
 const {addEnergyTransfer, clearEnergyForBrightId, getEnergy} = require("../../src/controllers/energyController");
 const {persistToLog} = require("../../src/controllers/activityLogController");
 const {json} = require("express");
+const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 var router = express.Router();
 
-router.post('/:fromBrightId', async function (req, res, next) {
+router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
     let fromBrightId = req.params.fromBrightId;
-    let publicKey = (await getSigningKey(fromBrightId)).rows[0]
-
-    if (publicKey === undefined) {
-        res.status(500).send("No public key defined for brightId")
-    }
+    let publicKey = req.body.signingKey
 
     let decryptedJson = undefined;
     try {
