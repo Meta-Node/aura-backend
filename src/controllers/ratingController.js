@@ -7,18 +7,17 @@ async function getRatings(brightId) {
 }
 
 async function getConnectionsRated(brightId) {
-    return await messagesModel.pool.query(
+    return messagesModel.pool.query(
         'SELECT "toBrightId" from ratings WHERE "fromBrightId" = $1',
         [brightId]
-    )
-}
-
-function getRatedById(brightId) {
-    return messagesModel.select('brightid', ` WHERE ratings.from_brightid = '${brightId}'`)
+    );
 }
 
 function rateConnection(fromBrightId, toBrightId, rating) {
-   return messagesModel.insert(toBrightId, rating, fromBrightId)
+    return messagesModel.pool.query(
+        'Insert into "ratings"("fromBrightId", "toBrightId", "rating") values ($1, $2, $3)',
+        [fromBrightId, toBrightId, rating]
+    )
 }
 
 function getNumberOfRatingsGiven(fromBightId) {
@@ -32,4 +31,4 @@ function getRating(fromBrightId, toBrightId) {
     )
 }
 
-module.exports = {getRatings, getRatedById, rateConnection, getNumberOfRatingsGiven, getRating}
+module.exports = {getRatings, rateConnection, getNumberOfRatingsGiven, getRating}
