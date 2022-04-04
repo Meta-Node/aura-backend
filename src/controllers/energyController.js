@@ -3,7 +3,7 @@ const {values} = require("pg/lib/native/query");
 const messagesModel = new Model('energyTransfer');
 
 async function clearEnergyForBrightId(brightId) {
-    return messagesModel.pool.query('DELETE from "energyTransfer" where "fromBrightId" = $1', brightId);
+    return messagesModel.pool.query('DELETE from "energyTransfer" where "fromBrightId" = $1', [brightId]);
 }
 
 async function addEnergyTransfer(toBrightId, fromBrightId, amount) {

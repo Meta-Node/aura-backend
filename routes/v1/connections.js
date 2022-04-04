@@ -3,6 +3,7 @@ const {getConnection, getConnections} = require("../../src/controllers/connectio
 const {getRating, getConnectionsRated} = require("../../src/controllers/ratingController");
 const {getSpecificEnergy} = require("../../src/controllers/energyController");
 const shuffleSeed = require('shuffle-seed');
+const {randomBytes} = require("tweetnacl");
 var router = express.Router();
 
 router.get('/:fromBrightId/:toBrightId', async function (req, res, next) {
@@ -35,13 +36,23 @@ router.get('/search', normalizeQueryParams, async function (req, res, next) {
         })
     }
     let resp = shuffleSeed.shuffle(connections, req.body.seed)
-        .slice(req.body.offset, req.body.offset);
+        .slice(req.body.offset, req.body.limit);
 
     res.json({
         "connections": resp
     })
 
 });
+
+async function get4Unrated(fromBrightId) {
+    let ratings = (await getConnectionsRated(fromBrightId)).rows
+    let connections = (await getConnections(fromBrightId))
+    connections = connections.filter(connection => {
+        !ratings.includes(connection._key)
+    })
+    shuffleSeed.shuffle(connections, cryptoSecureRandomInt())
+        .slice(0, 4);
+}
 
 
 async function normalizeQueryParams(req, res, next) {

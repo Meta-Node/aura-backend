@@ -22,6 +22,7 @@
     "node-pg-migrate": "^6.2.1",
     "pg": "^8.7.3",
     "pg-pool": "^3.4.1",
-    "shuffle-seed": "^1.1.6"
+    "shuffle-seed": "^1.1.6",
+    "tweetnacl": "^1.0.3"
   }
 }
