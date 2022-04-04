@@ -16,11 +16,13 @@ router.get('/:fromBrightId/:toBrightId', async function (req, res, next) {
     }
     let rating = (await getRating(fromBrightId, toBrightId)).rows[0]
     let energyTransfer = (await getSpecificEnergy(fromBrightId, toBrightId)).rows[0]
+    let fourUnrated = await get4Unrated(fromBrightId)
 
     res.json({
         previousRating: rating,
         energyAllocated: energyTransfer,
-        connectedTimestamp: connection.conn.timestamp
+        connectedTimestamp: connection.conn.timestamp,
+        fourUnrated
     })
 });
 

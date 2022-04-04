@@ -5,7 +5,8 @@ var logger = require('morgan');
 var cors = require('cors')
 
 var connectRouter = require('./routes/v1/connect');
-var connectionsRouter = require('./routes/v1/connections')
+var connectionsRouter = require('./routes/v1/connections');
+var proxyRouter = require('./routes/v1/proxy')
 
 var boolParser = require('express-query-boolean');
 const {json} = require("express");
@@ -21,6 +22,7 @@ app.use(cors())
 
 app.use('/v1/connect', connectRouter);
 app.use('/v1/connections', connectionsRouter)
+app.use('/', proxyRouter)
 
 
 

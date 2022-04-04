@@ -2,8 +2,10 @@ var express = require('express');
 const axios = require("axios");
 const AES = require("crypto-js/aes");
 const Utf8 = require("crypto-js/enc-utf8");
+const B64 = require('base64-js');
 const {persistSigningKey} = require("../../src/controllers/brightIdController");
 const nacl = require("tweetnacl");
+const {decrypt} = require("../../src/middlewear/decryption");
 
 const router = express.Router();
 
@@ -40,10 +42,10 @@ async function validateSigningKey(brightId, encryptedData, pk) {
     }
 
     try {
-        const utf8Encode = new TextEncoder();
-        let decrypt = Number.parseInt(utf8Encode.decode(nacl.sign.open(encryptedData, pk)))
+        let decryptedObj = decrypt(encryptedData, pk)
+        let timestamp = decryptedObj["timestamp"]
         let currentTime = Date.now()
-        if ((Math.abs(currentTime - decrypt["timestamp"] / 36e5) > 1)) {
+        if ((Math.abs(currentTime - timestamp) > 43200000)) {
             console.log(`[brightId: ${brightId}] timestamp delta too large`)
             throw new Error()
         }
