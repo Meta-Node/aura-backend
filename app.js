@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())
 
 app.use('/v1/connect', connectRouter);
-app.use('/v1/connection', connectionsRouter)
+app.use('/v1/connections', connectionsRouter)
 
 
 
