@@ -30,14 +30,14 @@ router.get('/search', normalizeQueryParams, async function (req, res, next) {
     if (!req.body.includeRated) {
         ratings = (await getConnectionsRated(req.body.fromBrightId)).rows
     }
+
     if (ratings) {
         connections = connections.filter(connection => {
-            !ratings.includes(connection._key)
+            return !ratings.includes(connection._key)
         })
     }
     let resp = shuffleSeed.shuffle(connections, req.body.seed)
-        .slice(req.body.offset, req.body.limit);
-
+        .slice(req.body.offset, req.body.limit)
     res.json({
         "connections": resp
     })
