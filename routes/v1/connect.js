@@ -3,6 +3,7 @@ const axios = require("axios");
 const AES = require("crypto-js/aes");
 const Utf8 = require("crypto-js/enc-utf8");
 const {persistSigningKey} = require("../../src/controllers/brightIdController");
+const nacl = require("tweetnacl");
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.post('/', async function (req, res, next) {
     }
     try {
         await validateSigningKey(brightId, encryptedTimestamp, pk);
-        persistSigningKey(brightId, pk)
+        await persistSigningKey(brightId, pk)
         res.sendStatus(200)
     } catch (error) {
         console.log(error);
@@ -39,15 +40,16 @@ async function validateSigningKey(brightId, encryptedData, pk) {
     }
 
     try {
-        let decrypt = JSON.parse(AES.decrypt(encryptedData, pk).toString(Utf8));
-        let currentTime = Date.now().valueOf()
+        const utf8Encode = new TextEncoder();
+        let decrypt = Number.parseInt(utf8Encode.decode(nacl.sign.open(encryptedData, pk)))
+        let currentTime = Date.now()
         if ((Math.abs(currentTime - decrypt["timestamp"] / 36e5) > 1)) {
             console.log(`[brightId: ${brightId}] timestamp delta too large`)
             throw new Error()
         }
 
     } catch (e) {
-        throw new Error(`[brightId: ${brightId}] could not decrypt data: ${encryptedData} with signingKey ${pk}`)
+        throw new Error(`[brightId: ${brightId}] could not decrypt data: ${encryptedData} with signingKey ${pk} with error ${e}`)
     }
 
 }
