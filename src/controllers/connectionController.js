@@ -1,6 +1,7 @@
 const {Database, aql} = require("arangojs");
 const {getConnectionsRated} = require("./ratingController");
 const shuffleSeed = require("shuffle-seed");
+
 aqlQuery = require('arangojs').aqlQuery;
 
 const getDbConnection = () => {
@@ -473,7 +474,7 @@ async function get4Unrated(fromBrightId) {
     connections = connections.filter(connection => {
         !ratings.includes(connection._key)
     })
-    shuffleSeed.shuffle(connections, cryptoSecureRandomInt())
+    shuffleSeed.shuffle(connections, crypto.randomUUID().toString())
         .slice(0, 4);
 }
 
