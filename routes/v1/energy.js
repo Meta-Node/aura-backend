@@ -12,6 +12,10 @@ const {decrypt} = require("../../src/middlewear/decryption");
 var router = express.Router();
 
 //https://github.com/dchest/tweetnacl-js/blob/master/README.md#documentation
+//compare energy to ratings
+//if rating = 1 can only send 25%
+// if 1 < rating <= 2, can only send up to 50%
+//if rating < 1, cannot send anything
 router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
     let fromBrightId = req.params.fromBrightId;
     let publicKey = req.body.signingKey
@@ -59,5 +63,7 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
         "energyAllocation": (await getEnergy(fromBrightId)).rows
     })
 });
+
+//add get all ratings given from BrightId
 
 module.exports = router;

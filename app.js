@@ -11,6 +11,7 @@ const energyRouter = require('./routes/v1/energy')
 const activityLogRouter = require('./routes/v1/log')
 const ratingsRouter = require('./routes/v1/ratings')
 const profileRouter = require('./routes/v1/profile')
+const nicknameRouter = require('./routes/v1/nicknames')
 
 var boolParser = require('express-query-boolean');
 const {json} = require("express");
@@ -31,7 +32,7 @@ app.use('v1/energy', energyRouter)
 app.use('/v1/activityLog', activityLogRouter)
 app.use('/v1/ratings', ratingsRouter)
 app.use('/v1/profile', profileRouter)
-
+app.use('/v1/nickname', nicknameRouter)
 
 
 module.exports = app;
