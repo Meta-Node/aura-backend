@@ -8,6 +8,7 @@ const {persistToLog} = require("../../src/controllers/activityLogController");
 const {json} = require("express");
 const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 const nacl = require("tweetnacl");
+const {decrypt} = require("../../src/middlewear/decryption");
 var router = express.Router();
 
 //https://github.com/dchest/tweetnacl-js/blob/master/README.md#documentation
@@ -15,10 +16,10 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
     let fromBrightId = req.params.fromBrightId;
     let publicKey = req.body.signingKey
 
-    let decryptedJson = req.body;
+    let decryptedJson = req.body.encryptedTransfers;
 
     try {
-        decryptedJson = JSON.parse(nacl.sign.open(req.body, publicKey))
+        decryptedJson = decrypt(decryptedJson, publicKey)
     } catch (exception) {
         res.status(500).send("Could not decrypt using publicKey: " + publicKey)
     }
@@ -39,10 +40,10 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
 
     await clearEnergyForBrightId(fromBrightId)
     decryptedJson.transfers.forEach(transfer => {
-            promises.push(addEnergyTransfer(transfer.toBrightId, fromBrightId, transfer.amount))
+            promises.push(addEnergyTransfer(transfer.brightId, fromBrightId, transfer.amount))
             promises.push(persistToLog(
                     fromBrightId,
-                    transfer.toBrightId,
+                    transfer.brightId,
                     {
                         "action": "ENERGY_TRANSFER",
                         "amount": transfer.amount

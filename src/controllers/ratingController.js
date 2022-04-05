@@ -31,4 +31,18 @@ function getRating(fromBrightId, toBrightId) {
     )
 }
 
+async function getRatingsReceived(brightId) {
+    let ratings = (await messagesModel.pool.query(
+        'SELECT * from "ratings" WHERE "toBrightId" = $1',
+        [brightId]
+    )).rows
+
+    
+
+}
+
+function calculateRating(fromBrightId) {
+
+}
+
 module.exports = {getConnectionsRated, rateConnection, getNumberOfRatingsGiven, getRating}

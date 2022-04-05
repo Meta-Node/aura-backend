@@ -1,4 +1,6 @@
 const {Database, aql} = require("arangojs");
+const {getConnectionsRated} = require("./ratingController");
+const shuffleSeed = require("shuffle-seed");
 aqlQuery = require('arangojs').aqlQuery;
 
 const getDbConnection = () => {
@@ -49,6 +51,25 @@ const getConnection = async (fromBrightId, toBrightId) => {
         'FILTER otherUser._key == "' + toBrightId + '" \n' +
         'FILTER connection._to == otherUser._id\n' +
         'return merge(otherUser, {conn: connection})\n').then(
+        cursor => cursor.all()
+    ).then(
+        key => {
+            x = key
+        },
+        //key => passworddb = key,
+        err => console.error('Failed to execute query')
+    );
+    return x;
+}
+
+const getBrightId = async (brightId) => {
+    let db = getDbConnection();
+    // brightId = "users/" + brightId
+    let x = []
+    await db.query(
+        'for user in users' +
+        ' FILTER user._key == "' + brightId + '"' +
+        ' return user').then(
         cursor => cursor.all()
     ).then(
         key => {
@@ -446,9 +467,20 @@ const addNickname = async (brightId, nickname) => {
     return x;
 }
 
+async function get4Unrated(fromBrightId) {
+    let ratings = (await getConnectionsRated(fromBrightId)).rows
+    let connections = (await getConnections(fromBrightId))
+    connections = connections.filter(connection => {
+        !ratings.includes(connection._key)
+    })
+    shuffleSeed.shuffle(connections, cryptoSecureRandomInt())
+        .slice(0, 4);
+}
 
 module.exports = {
     getConnections,
     getAllConnections,
-    getConnection
+    getConnection,
+    getBrightId,
+    get4Unrated
 }
