@@ -15,3 +15,4 @@ async function getAllNicknamesForBrightId(brightId) {
     return messagesModel.pool.query('SELECT "toBrightId", "nickName" from nicknames where "fromBrightId" = $1', [brightId]);
 }
 
+module.exports = {upsertNickname, getAllNicknamesForBrightId}
