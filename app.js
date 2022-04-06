@@ -28,7 +28,7 @@ app.use(cors())
 app.use('/v1/connect', connectRouter);
 app.use('/v1/connections', connectionsRouter)
 app.use('/', proxyRouter)
-app.use('v1/energy', energyRouter)
+app.use('/v1/energy', energyRouter)
 app.use('/v1/activityLog', activityLogRouter)
 app.use('/v1/ratings', ratingsRouter)
 app.use('/v1/profile', profileRouter)
