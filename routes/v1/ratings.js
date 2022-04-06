@@ -30,7 +30,7 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (re
 });
 
 router.get("/:fromBrightId", validateAuraPlayer, async function (req, res, next) {
-    let ratings = await getAllRatingsGiven(req.params.fromBrightId)
+    let ratings = (await getAllRatingsGiven(req.params.fromBrightId)).rows
     res.json({
         ratings
     })

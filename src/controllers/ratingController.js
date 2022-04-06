@@ -35,7 +35,7 @@ async function getRatingsReceived(brightId) {
     let ratings = (await messagesModel.pool.query(
         'SELECT * from "ratings" WHERE "toBrightId" = $1',
         [brightId]
-    )).rows
+    ))
 
    return ratings
 }
@@ -44,12 +44,13 @@ async function getAllRatingsGiven(brightId) {
     return messagesModel.pool.query(
         'SELECT * from "ratings" WHERE "fromBrightId" = $1',
         [brightId]
-    ).rows
+    )
 }
 
 async function getRatingsMap(brightId) {
     let ratings = await getAllRatingsGiven(brightId);
     let map = {}
+    ratings = ratings.rows
     ratings.map(rating => {
         map[rating.toBrightId] = rating.rating
     })
