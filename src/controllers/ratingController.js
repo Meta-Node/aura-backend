@@ -37,12 +37,27 @@ async function getRatingsReceived(brightId) {
         [brightId]
     )).rows
 
-    
+   return ratings
+}
 
+async function getAllRatingsGiven(brightId) {
+    return messagesModel.pool.query(
+        'SELECT * from "ratings" WHERE "fromBrightId" = $1',
+        [brightId]
+    ).rows
+}
+
+async function getRatingsMap(brightId) {
+    let ratings = await getAllRatingsGiven(brightId);
+    let map = {}
+    ratings.map(rating => {
+        map[rating.toBrightId] = rating.rating
+    })
+    return map;
 }
 
 function calculateRating(fromBrightId) {
 
 }
 
-module.exports = {getConnectionsRated, rateConnection, getNumberOfRatingsGiven, getRating}
+module.exports = {getConnectionsRated, rateConnection, getNumberOfRatingsGiven, getRating, getAllRatingsGiven, getRatingsMap}

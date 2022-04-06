@@ -9,6 +9,7 @@ const {json} = require("express");
 const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 const nacl = require("tweetnacl");
 const {decrypt} = require("../../src/middlewear/decryption");
+const {getRatingsMap} = require("../../src/controllers/ratingController");
 var router = express.Router();
 
 //https://github.com/dchest/tweetnacl-js/blob/master/README.md#documentation
@@ -39,6 +40,29 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
     if(energy > 100) {
         res.status(500).send("cannot give out over 100 energy");
     }
+
+    let ratingMap = getRatingsMap(fromBrightId);
+
+    decryptedJson.transfers.forEach(transfer => {
+        let rating = ratingMap[transfer.brightId];
+        if(transfer.amount < 0) {
+            res.status(500).send("cannot send negative amount")
+        }
+        if(rating === undefined) {
+            res.status(500).send(`Cannot send energy to unrated connection ${transfer.brightId}`)
+        }
+        if(rating.rating < 1) {
+            res.status(500).send(`Cannot send energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
+        }
+        if(rating.rating === 1 && transfer.amount > 25) {
+            res.status(500).send(`Cannot send that ${transfer.amount} energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
+        }
+        if(rating.rating > 1 && rating.rating <= 2 && transfer.amount > 50) {
+            res.status(500).send(`Cannot send that much energy energy to connection ${transfer.brightId} because connection has rating ${rating.rating}`)
+        }
+
+
+    })
 
     let promises = []
 

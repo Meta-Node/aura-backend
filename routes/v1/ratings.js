@@ -1,6 +1,6 @@
 var express = require('express');
 const {getConnection} = require("../../src/controllers/connectionController");
-const {rateConnection} = require("../../src/controllers/ratingController");
+const {rateConnection, getAllRatingsGiven} = require("../../src/controllers/ratingController");
 const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 const {persistToLog} = require("../../src/controllers/activityLogController");
 const {decrypt} = require("../../src/middlewear/decryption");
@@ -26,6 +26,13 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (re
             "amount": rating
         }
     )
+});
+
+router.get("/:fromBrightId", validateAuraPlayer, async function (req, res, next) {
+    let ratings = await getAllRatingsGiven(req.params.fromBrightId)
+    res.json({
+        ratings
+    })
 });
 
 module.exports = router;
