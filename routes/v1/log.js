@@ -5,12 +5,12 @@ const {getAllAfter, getAllAfterForBrightId} = require("../../src/controllers/act
 var router = express.Router();
 
 router.get('/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
-    let fromBrightId = req.body.fromBrightId
+    let fromBrightId = req.params.fromBrightId
     let limit = req.query.limit ? req.query.limit : 20
     let timestamp = req.query.timestamp ? req.query.timestamp : Date.now()
 
     res.json({
-        events: (await getAllAfterForBrightId(limit, timestamp, fromBrightId))
+        events: (await getAllAfterForBrightId(timestamp, limit, fromBrightId)).rows
     })
 });
 
