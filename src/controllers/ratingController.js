@@ -15,7 +15,7 @@ async function getConnectionsRated(brightId) {
 
 function rateConnection(fromBrightId, toBrightId, rating) {
     return messagesModel.pool.query(
-        'Insert into "ratings"("fromBrightId", "toBrightId", "rating") values ($1, $2, $3)',
+        'Insert into "ratings"("fromBrightId", "toBrightId", "rating") values ($1, $2, $3) ON CONFLICT ("fromBrightId", "toBrightId") DO UPDATE SET "rating" = $3',
         [fromBrightId, toBrightId, rating]
     )
 }
