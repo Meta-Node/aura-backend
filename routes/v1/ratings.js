@@ -26,7 +26,7 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (re
             "amount": rating
         }
     )
-    res.status(200).send
+    res.send()
 });
 
 router.get("/:fromBrightId", validateAuraPlayer, async function (req, res, next) {
