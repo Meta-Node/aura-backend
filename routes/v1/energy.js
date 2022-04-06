@@ -10,6 +10,7 @@ const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 const nacl = require("tweetnacl");
 const {decrypt} = require("../../src/middlewear/decryption");
 const {getRatingsMap} = require("../../src/controllers/ratingController");
+const {getAllNicknamesForBrightId} = require("../../src/controllers/nicknameController");
 var router = express.Router();
 
 //https://github.com/dchest/tweetnacl-js/blob/master/README.md#documentation
@@ -88,6 +89,9 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
     })
 });
 
-//add get all ratings given from BrightId
+router.get('/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
+    let energy = (await getEnergy(req.params.fromBrightId)).rows
+    res.json({energy})
+});
 
 module.exports = router;
