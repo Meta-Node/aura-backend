@@ -2,7 +2,7 @@ const {getSigningKey} = require("../controllers/brightIdController");
 
 async function validateAuraPlayer(req, res, next) {
     let fromBrightId = req.params.fromBrightId;
-    let publicKey = (await getSigningKey(fromBrightId)).rows[0]
+    let publicKey = (await getSigningKey(fromBrightId)).rows[0].publicKey
 
     if (publicKey === undefined) {
         return res.status(500).send("No public key defined for brightId")
