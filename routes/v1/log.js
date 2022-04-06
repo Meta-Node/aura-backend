@@ -4,7 +4,7 @@ const express = require("express");
 const {getAllAfter, getAllAfterForBrightId} = require("../../src/controllers/activityLogController");
 var router = express.Router();
 
-router.get('/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
+router.get('/detail/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
     let fromBrightId = req.params.fromBrightId
     let limit = req.query.limit ? req.query.limit : 20
     let timestamp = req.query.timestamp ? req.query.timestamp : Date.now()
