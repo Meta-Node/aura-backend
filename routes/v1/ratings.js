@@ -3,6 +3,7 @@ const {getConnection} = require("../../src/controllers/connectionController");
 const {rateConnection} = require("../../src/controllers/ratingController");
 const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 const {persistToLog} = require("../../src/controllers/activityLogController");
+const {decrypt} = require("../../src/middlewear/decryption");
 
 var router = express.Router();
 
@@ -17,6 +18,7 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (re
     }
 
     //need decryption logic here
+    rating = decrypt(rating, req.body.signingKey).rating
 
     await rateConnection(fromBrightId, toBrightId, rating)
     await persistToLog(fromBrightId, toBrightId, {
