@@ -2,6 +2,7 @@ const {getConnection, getConnections, getBrightId, get4Unrated} = require("../..
 const {rateConnection} = require("../../src/controllers/ratingController");
 const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 const express = require("express");
+const {getAllNicknamesForBrightId} = require("../../src/controllers/nicknameController");
 
 var router = express.Router();
 //needs 4 to be rated
@@ -14,12 +15,14 @@ router.get('/:fromBrightId', validateAuraPlayer, async function (req, res, next)
     let fourUnrated = await get4Unrated(fromBrightId)
     let rating = 10
     let numOfConnections = connections.length - 1
+    let nicknames = (await getAllNicknamesForBrightId()).rows
 
     res.json({
         numOfConnections,
         brightIdDate,
         fourUnrated,
-        rating
+        rating,
+        nicknames
     })
 });
 
