@@ -3,7 +3,7 @@ const {values} = require("pg/lib/native/query");
 const messagesModel = new Model('nicknames');
 
 async function upsertNickname(fromBrightId, toBrightId, nickname) {
-    return messagesModel.pool.query('INSERT INTO nicknames("fromBrightId", "toBrightId", "nickName") VALUES ($1, $2, $3) ON CONFLICT ("fromBrightId") DO UPDATE SET "nickName" = $3',
+    return messagesModel.pool.query('INSERT INTO nicknames("fromBrightId", "toBrightId", "nickName") VALUES ($1, $2, $3) ON CONFLICT ("fromBrightId", "toBrightId") DO UPDATE SET "nickName" = $3',
         [fromBrightId, toBrightId, nickname]);
 }
 
