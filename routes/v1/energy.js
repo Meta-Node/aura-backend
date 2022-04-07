@@ -42,7 +42,7 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
         res.status(500).send("cannot give out over 100 energy");
     }
 
-    let ratingMap = getRatingsMap(fromBrightId);
+    let ratingMap = await getRatingsMap(fromBrightId);
 
     try {
         decryptedJson.transfers.forEach(transfer => {
