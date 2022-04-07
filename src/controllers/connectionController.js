@@ -28,7 +28,9 @@ const getConnections = async (brightId) => {
         ' FILTER user._key == "' + brightId + '"' +
         ' for connection in connections' +
         ' FILTER connection._from == user._id' +
-        ' return merge(user, {conn: connection})').then(
+        ' for otherUser in users' +
+        ' FILTER connection._to == otherUser._id' +
+        ' return merge(otherUser, {conn: connection})').then(
         cursor => cursor.all()
     ).then(
         key => {
@@ -470,7 +472,7 @@ const addNickname = async (brightId, nickname) => {
 }
 
 async function get4Unrated(fromBrightId) {
-    let ratings = (await getConnectionsRated(fromBrightId)).rows
+    let ratings = (await getConnectionsRated(fromBrightId)).rows.map(e => e.toBrightId)
     let connections = (await getConnections(fromBrightId))
     connections = connections.filter(connection => {
         return !ratings.includes(connection._key)
