@@ -46,23 +46,24 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
 
     decryptedJson.transfers.forEach(transfer => {
         let rating = ratingMap[transfer.brightId];
+        if(rating === undefined) {
+            res.status(500).send("no rating for brightId")
+        }
         if(transfer.amount < 0) {
             res.status(500).send("cannot send negative amount")
         }
         if(rating === undefined) {
             res.status(500).send(`Cannot send energy to unrated connection ${transfer.brightId}`)
         }
-        if(rating.rating < 1) {
+        if(rating < 1) {
             res.status(500).send(`Cannot send energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
         }
-        if(rating.rating === 1 && transfer.amount > 25) {
+        if(rating === 1 && transfer.amount > 25) {
             res.status(500).send(`Cannot send that ${transfer.amount} energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
         }
-        if(rating.rating > 1 && rating.rating <= 2 && transfer.amount > 50) {
+        if(rating > 1 && rating <= 2 && transfer.amount > 50) {
             res.status(500).send(`Cannot send that much energy energy to connection ${transfer.brightId} because connection has rating ${rating.rating}`)
         }
-
-
     })
 
     let promises = []
