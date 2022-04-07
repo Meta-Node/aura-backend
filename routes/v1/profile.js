@@ -8,10 +8,15 @@ var router = express.Router();
 //needs 4 to be rated
 //aura time
 // number of connection
-router.get('/public/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
+router.get('/public/:fromBrightId', async function (req, res, next) {
     let fromBrightId = req.params.fromBrightId
     let connections = await getConnections(fromBrightId)
-    let brightIdDate = (await getBrightId(fromBrightId))[0]["createdAt"]
+    let brightIdDate;
+    try {
+        brightIdDate = (await getBrightId(fromBrightId))[0]["createdAt"]
+    } catch (e) {
+        res.status(500).send("invalid brightId")
+    }
     let rating = 10
     let numOfConnections = connections.length
 
