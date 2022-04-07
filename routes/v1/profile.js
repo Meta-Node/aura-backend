@@ -15,7 +15,7 @@ router.get('/:fromBrightId', validateAuraPlayer, async function (req, res, next)
     let fourUnrated = await get4Unrated(fromBrightId)
     let rating = 10
     let numOfConnections = connections.length
-    let nicknames = (await getAllNicknamesForBrightId()).rows
+    let nicknames = (await getAllNicknamesForBrightId(fromBrightId)).rows
 
     res.json({
         numOfConnections,
