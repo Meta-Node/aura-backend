@@ -44,27 +44,28 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
 
     let ratingMap = getRatingsMap(fromBrightId);
 
-    decryptedJson.transfers.forEach(transfer => {
-        let rating = ratingMap[transfer.brightId];
-        if(rating === undefined) {
-            res.status(500).send("no rating for brightId")
-        }
-        if(transfer.amount < 0) {
-            res.status(500).send("cannot send negative amount")
-        }
-        if(rating === undefined) {
-            res.status(500).send(`Cannot send energy to unrated connection ${transfer.brightId}`)
-        }
-        if(rating < 1) {
-            res.status(500).send(`Cannot send energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
-        }
-        if(rating === 1 && transfer.amount > 25) {
-            res.status(500).send(`Cannot send that ${transfer.amount} energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
-        }
-        if(rating > 1 && rating <= 2 && transfer.amount > 50) {
-            res.status(500).send(`Cannot send that much energy energy to connection ${transfer.brightId} because connection has rating ${rating.rating}`)
-        }
-    })
+    try {
+        decryptedJson.transfers.forEach(transfer => {
+            let rating = ratingMap[transfer.brightId];
+            if (rating === undefined) {
+                throw new Error("no rating for brightId")
+            }
+            if (transfer.amount < 0) {
+                throw new Error("cannot send negative amount")
+            }
+            if (rating < 1) {
+                throw new Error(`Cannot send energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
+            }
+            if (rating === 1 && transfer.amount > 25) {
+                throw new Error(`Cannot send that ${transfer.amount} energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
+            }
+            if (rating > 1 && rating <= 2 && transfer.amount > 50) {
+                throw new Error(`Cannot send that much energy energy to connection ${transfer.brightId} because connection has rating ${rating.rating}`)
+            }
+        })
+    } catch (error) {
+        return res.status(500).send(error)
+    }
 
     let promises = []
 
