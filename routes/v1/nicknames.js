@@ -18,7 +18,7 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (re
     let nickname = decrypt(encryptedNickname, signingKey)["nickname"]
 
     await upsertNickname(fromBrightId, toBrightId, nickname)
-    let nicknames = (await getAllNicknamesForBrightId()).rows
+    let nicknames = (await getAllNicknamesForBrightId(fromBrightId)).rows
     res.json({nicknames})
 
 });
