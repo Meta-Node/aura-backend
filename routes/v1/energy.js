@@ -64,7 +64,7 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
             }
         })
     } catch (error) {
-        return res.status(500).send(error)
+        return res.status(500).send(error.toString())
     }
 
     let promises = []
@@ -86,7 +86,7 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
 
     await Promise.all(promises)
 
-    res.json({
+    return res.json({
         "energyAllocation": (await getEnergy(fromBrightId)).rows
     })
 });
