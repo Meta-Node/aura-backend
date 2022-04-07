@@ -25,7 +25,7 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (re
 
 router.get('/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
     let fromBrightId = req.params.fromBrightId;
-    let nicknames = (await getAllNicknamesForBrightId()).rows
+    let nicknames = (await getAllNicknamesForBrightId(fromBrightId)).rows
     res.json({nicknames})
 });
 
