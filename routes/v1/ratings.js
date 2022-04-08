@@ -18,8 +18,11 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (re
     }
 
     //need decryption logic here
-    rating = decrypt(rating, req.body.signingKey).rating
-
+    try {
+        rating = decrypt(rating, req.body.signingKey).rating
+    } catch (exception) {
+        res.status(500).send(exception.toString())
+    }
     await rateConnection(fromBrightId, toBrightId, rating)
     await persistToLog(fromBrightId, toBrightId, {
             "action": "RATED_CONNECTION",
