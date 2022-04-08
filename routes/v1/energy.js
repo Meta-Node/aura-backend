@@ -46,21 +46,21 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
 
     try {
         decryptedJson.transfers.forEach(transfer => {
-            let rating = ratingMap[transfer.brightId];
+            let rating = ratingMap[transfer.toBrightId];
             if (rating === undefined) {
-                throw new Error("no rating for brightId")
+                throw new Error(`cannot send energy to brightId ${transfer.toBrightId} due to there being no rating`)
             }
             if (transfer.amount < 0) {
                 throw new Error("cannot send negative amount")
             }
             if (rating < 1) {
-                throw new Error(`Cannot send energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
+                throw new Error(`Cannot send energy to connection  ${transfer.toBrightId} because connection has rating ${rating.rating}`)
             }
             if (rating === 1 && transfer.amount > 25) {
-                throw new Error(`Cannot send that ${transfer.amount} energy to connection  ${transfer.brightId} because connection has rating ${rating.rating}`)
+                throw new Error(`Cannot send that ${transfer.amount} energy to connection  ${transfer.toBrightId} because connection has rating ${rating.rating}`)
             }
             if (rating > 1 && rating <= 2 && transfer.amount > 50) {
-                throw new Error(`Cannot send that much energy energy to connection ${transfer.brightId} because connection has rating ${rating.rating}`)
+                throw new Error(`Cannot send that much energy energy to connection ${transfer.toBrightId} because connection has rating ${rating.rating}`)
             }
         })
     } catch (error) {
@@ -71,10 +71,10 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
 
     await clearEnergyForBrightId(fromBrightId)
     decryptedJson.transfers.forEach(transfer => {
-            promises.push(addEnergyTransfer(transfer.brightId, fromBrightId, transfer.amount))
+            promises.push(addEnergyTransfer(transfer.toBrightId, fromBrightId, transfer.amount))
             promises.push(persistToLog(
                     fromBrightId,
-                    transfer.brightId,
+                    transfer.toBrightId,
                     {
                         "action": "ENERGY_TRANSFER",
                         "amount": transfer.amount
