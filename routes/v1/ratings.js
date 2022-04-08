@@ -21,7 +21,7 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (re
     try {
         rating = decrypt(rating, req.body.signingKey).rating
     } catch (exception) {
-        res.status(500).send(exception.toString())
+        return res.status(500).send(exception.toString())
     }
     await rateConnection(fromBrightId, toBrightId, rating)
     await persistToLog(fromBrightId, toBrightId, {

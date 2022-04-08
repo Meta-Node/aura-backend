@@ -16,6 +16,7 @@ const nicknameRouter = require('./routes/v1/nicknames')
 var boolParser = require('express-query-boolean');
 const {json} = require("express");
 const {getConnectionArray, getConnections, getAllConnections} = require("./src/controllers/connectionController");
+const {clientErrorHandler} = require("./src/middlewear/aurahandler");
 var app = express();
 
 app.use(logger('dev'));
@@ -24,6 +25,7 @@ app.use(boolParser());
 app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())
+app.use(clientErrorHandler)
 
 app.use('/v1/connect', connectRouter);
 app.use('/v1/connections', connectionsRouter)
