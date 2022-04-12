@@ -17,7 +17,7 @@ router.get('/public/:fromBrightId', async function (req, res, next) {
     } catch (e) {
         res.status(500).send("invalid brightId")
     }
-    let rating = 10
+    let rating = 0
     let numOfConnections = connections.length
 
     res.json({
@@ -33,7 +33,7 @@ router.get('/:fromBrightId', validateAuraPlayer, async function (req, res, next)
     let connections = await getConnections(fromBrightId)
     let brightIdDate = (await getBrightId(fromBrightId))[0]["createdAt"]
     let fourUnrated = await get4Unrated(fromBrightId)
-    let rating = 10
+    let rating = 0
     let numOfConnections = connections.length
     let nicknames = (await getAllNicknamesForBrightId(fromBrightId)).rows
 

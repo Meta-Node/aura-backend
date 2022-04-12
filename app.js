@@ -12,6 +12,7 @@ const activityLogRouter = require('./routes/v1/log')
 const ratingsRouter = require('./routes/v1/ratings')
 const profileRouter = require('./routes/v1/profile')
 const nicknameRouter = require('./routes/v1/nicknames')
+const publicRouter = require('./routes/v1/oracle')
 
 var boolParser = require('express-query-boolean');
 const {json} = require("express");
@@ -35,6 +36,7 @@ app.use('/v1/activityLog', activityLogRouter)
 app.use('/v1/ratings', ratingsRouter)
 app.use('/v1/profile', profileRouter)
 app.use('/v1/nickname', nicknameRouter)
+app.use('/v1/public', publicRouter)
 
 
 module.exports = app;
