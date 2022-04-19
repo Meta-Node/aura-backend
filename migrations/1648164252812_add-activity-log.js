@@ -22,6 +22,11 @@ exports.up = pgm => {
             notNull: true,
             default: pgm.func('current_timestamp'),
         },
+        isImportant: {
+            type: 'boolean',
+            notNull: true,
+            default: false
+        }
     })
 
     pgm.createIndex("activityLog", "fromBrightId")

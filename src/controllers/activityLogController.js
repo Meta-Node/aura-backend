@@ -13,5 +13,9 @@ async function getAllAfterForBrightId(timestamp, limit, fromBrightId) {
     return keysModel.pool.query('SELECT * from "activityLog" where timestamp <= to_timestamp($1) AND ("fromBrightId" = $3 OR "toBrightId" = $3) LIMIT $2', [timestamp, limit, fromBrightId]);
 }
 
+async function updateIsImportant(id, val) {
+    return keysModel.pool.query('UPDATE "activityLog" SET "isimportant"=$1 where "id"=$2', [val, id])
+}
 
-module.exports = {persistToLog, getAllAfter, getAllAfterForBrightId}
+
+module.exports = {persistToLog, getAllAfter, getAllAfterForBrightId, updateIsImportant}

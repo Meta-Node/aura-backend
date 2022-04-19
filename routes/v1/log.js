@@ -1,7 +1,6 @@
 const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
-const {getConnections, getBrightId, get4Unrated} = require("../../src/controllers/connectionController");
 const express = require("express");
-const {getAllAfter, getAllAfterForBrightId} = require("../../src/controllers/activityLogController");
+const {getAllAfter, getAllAfterForBrightId, updateIsImportant} = require("../../src/controllers/activityLogController");
 var router = express.Router();
 
 router.get('/detail/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
@@ -21,5 +20,16 @@ router.get("/general", async function (req, res, next) {
         events: (await getAllAfter(timestamp, limit)).rows
     })
 });
+
+router.post("/:logId", async function (req, res, next) {
+    let logId = req.params.logId
+    let isImportant = req.body.isImportant
+    if (!logId || !isImportant) {
+        res.status(500).send("Need log id")
+    }
+
+    await updateIsImportant(logId, isImportant)
+    res.status(204).send()
+})
 
 module.exports = router
