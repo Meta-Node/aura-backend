@@ -26,6 +26,29 @@ router.post('/', async function (req, res, next) {
     }
 });
 
+router.post('/explorer-code', async function (req, res, next) {
+    let pk = req.body.publicKey;
+    let brightId = req.body.brightId;
+    let key = req.body.key
+    let password = req.body.password
+    if (pk === undefined || brightId === undefined || key === undefined || password === undefined) {
+        res.status(500).send("Missing body params")
+    }
+    try {
+        await pullProfilePhoto(key, brightId, password)
+        await persistSigningKey(brightId, pk)
+        res.sendStatus(200)
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
+
+async function pullProfilePhoto(key, brightId, password) {
+    let encryptedUserPicture = await axios.get(`https://recovery.brightid.org/backups/${key}/${brightId}`)
+    return AES.decrypt(encryptedUserPicture.data, password).toString(Utf8);
+}
+
 async function validateSigningKey(brightId, encryptedData, pk) {
     let keys = await axios.get(`https://app.brightid.org/node/v5/users/${brightId}`)
         .then(data => {
