@@ -24,7 +24,7 @@ router.get("/general", async function (req, res, next) {
 router.post("/:logId", async function (req, res, next) {
     let logId = req.params.logId
     let isImportant = req.body.isImportant
-    if (!logId || !isImportant) {
+    if (!logId || isImportant === undefined) {
         res.status(500).send("Need log id")
     }
 
