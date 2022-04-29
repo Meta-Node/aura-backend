@@ -1,5 +1,7 @@
 
 
-export default function generateRatings(brightId) {
+function generateRatings(brightId) {
     return 0;
 }
+
+module.exports = {generateRatings}

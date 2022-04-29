@@ -3,7 +3,7 @@ const {rateConnection} = require("../../src/controllers/ratingController");
 const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 const express = require("express");
 const {getAllNicknamesForBrightId} = require("../../src/controllers/nicknameController");
-const generateRatings = require("../../src/ratings/ratingsManager");
+const {generateRatings} = require("../../src/ratings/ratingsManager");
 
 var router = express.Router();
 //needs 4 to be rated
