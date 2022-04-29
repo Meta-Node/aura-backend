@@ -3,6 +3,7 @@ const {rateConnection} = require("../../src/controllers/ratingController");
 const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
 const express = require("express");
 const {getAllNicknamesForBrightId} = require("../../src/controllers/nicknameController");
+const generateRatings = require("../../src/ratings/ratingsManager");
 
 var router = express.Router();
 //needs 4 to be rated
@@ -17,7 +18,7 @@ router.get('/public/:fromBrightId', async function (req, res, next) {
     } catch (e) {
         res.status(500).send("invalid brightId")
     }
-    let rating = 0
+    let rating = generateRatings(fromBrightId)
     let numOfConnections = connections.length
 
     res.json({
@@ -33,7 +34,7 @@ router.get('/:fromBrightId', validateAuraPlayer, async function (req, res, next)
     let connections = await getConnections(fromBrightId)
     let brightIdDate = (await getBrightId(fromBrightId))[0]["createdAt"]
     let fourUnrated = await get4Unrated(fromBrightId)
-    let rating = 0
+    let rating = generateRatings(fromBrightId)
     let numOfConnections = connections.length
     let nicknames = (await getAllNicknamesForBrightId(fromBrightId)).rows
 
