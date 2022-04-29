@@ -4,7 +4,7 @@ require('dotenv').config()
 
 let energyTeam = ["xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM", "AsjAK5gJ68SMYvGfCAuROsMrJQ0_83ZS92xy94LlfIA"]
 let numberOfIterations = 3
-let startingEnergy = 100
+let startingEnergy = 100000
 let energyMap = new Map()
 let finalEnergy = {}
 
@@ -44,9 +44,13 @@ async function Asyncfunction() {
                 currentEnergy -= transfer
             })
             finalEnergy[brightId] = currentEnergy
+            energyMap = nextEnergy
         })
         numberOfIterations--
     }
+    finalEnergy.forEach(brightId => {
+        addEnergyHoldings(brightId)
+    })
 }
 
 (async () => {
