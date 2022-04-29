@@ -6,11 +6,11 @@ async function persistToLog(fromBrightId, toBrightId, action) {
 }
 
 async function getAllAfter(timestamp, limit) {
-    return keysModel.pool.query('SELECT * from "activityLog" where timestamp < to_timestamp($1) ORDER BY timestamp desc LIMIT $2', [timestamp, limit]);
+    return keysModel.pool.query('SELECT * from "activityLog" where timestamp < to_timestamp($1) ORDER BY timestamp asc LIMIT $2', [timestamp, limit]);
 }
 
 async function getAllAfterForBrightId(timestamp, limit, fromBrightId) {
-    return keysModel.pool.query('SELECT * from "activityLog" where timestamp <= to_timestamp($1) AND ("fromBrightId" = $3 OR "toBrightId" = $3) ORDER BY timestamp desc LIMIT $2', [timestamp, limit, fromBrightId]);
+    return keysModel.pool.query('SELECT * from "activityLog" where timestamp <= to_timestamp($1) AND ("fromBrightId" = $3 OR "toBrightId" = $3) ORDER BY timestamp asc LIMIT $2', [timestamp, limit, fromBrightId]);
 }
 
 async function updateIsImportant(id, val) {
