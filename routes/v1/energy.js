@@ -29,7 +29,7 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
     } catch (exception) {
         res.status(500).send("Could not decrypt using publicKey: " + publicKey)
     }
-    if (decryptedJson === undefined || decryptedJson == null) {
+    if (decryptedJson === undefined || decryptedJson == null || decryptedJson.transfers === undefined) {
         res.status(500).send("decryption issues: " + publicKey);
     }
 
