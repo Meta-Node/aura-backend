@@ -6,7 +6,7 @@ async function persistToLog(fromBrightId, toBrightId, action) {
 }
 
 async function getAllAfter(timestamp, limit) {
-    return keysModel.pool.query('SELECT * from "activityLog" where timestamp < to_timestamp($1) ORDER BY timestamp desc LIMIT $2', [timestamp, limit]);
+    return keysModel.pool.query('SELECT * from "activityLog" where timestamp <= to_timestamp($1) ORDER BY timestamp desc LIMIT $2', [timestamp, limit]);
 }
 
 async function getAllAfterForBrightId(timestamp, limit, fromBrightId) {
