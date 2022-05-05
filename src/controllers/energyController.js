@@ -15,7 +15,7 @@ async function getEnergy(fromBrightId) {
 }
 
 async function getInboundEnergy(toBrightId) {
-    return messagesModel.pool.query('SELECT "toBrightId", amount from "energyTransfer" WHERE "toBrightId" = $1', [toBrightId]);
+    return messagesModel.pool.query('SELECT "fromBrightId", amount from "energyTransfer" WHERE "toBrightId" = $1', [toBrightId]);
 }
 
 async function getSpecificEnergy(fromBrightId, toBrightId) {
