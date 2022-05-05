@@ -14,6 +14,10 @@ async function getEnergy(fromBrightId) {
     return messagesModel.pool.query('SELECT "toBrightId", amount from "energyTransfer" WHERE "fromBrightId" = $1', [fromBrightId]);
 }
 
+async function getInboundEnergy(toBrightId) {
+    return messagesModel.pool.query('SELECT "toBrightId", amount from "energyTransfer" WHERE "toBrightId" = $1', [toBrightId]);
+}
+
 async function getSpecificEnergy(fromBrightId, toBrightId) {
     return messagesModel.pool.query('SELECT amount from "energyTransfer" WHERE "fromBrightId" = $1 AND "toBrightId" = $2', [fromBrightId, toBrightId]);
 }
@@ -23,4 +27,4 @@ async function resetRatingForConnectionPostRating(fromBrightId, toBrightId) {
 }
 
 
-module.exports = {clearEnergyForBrightId, addEnergyTransfer, getEnergy, getSpecificEnergy, resetRatingForConnectionPostRating}
+module.exports = {clearEnergyForBrightId, addEnergyTransfer, getEnergy, getSpecificEnergy, resetRatingForConnectionPostRating, getInboundEnergy}

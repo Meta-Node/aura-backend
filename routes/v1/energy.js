@@ -3,7 +3,7 @@ const {getConnection} = require("../../src/controllers/connectionController");
 const crypto = require("crypto-js");
 const {getSigningKey} = require("../../src/controllers/brightIdController");
 const Utf8 = require("crypto-js/enc-utf8");
-const {addEnergyTransfer, clearEnergyForBrightId, getEnergy} = require("../../src/controllers/energyController");
+const {addEnergyTransfer, clearEnergyForBrightId, getEnergy, getInboundEnergy} = require("../../src/controllers/energyController");
 const {persistToLog} = require("../../src/controllers/activityLogController");
 const {json} = require("express");
 const {validateAuraPlayer} = require("../../src/middlewear/aurahandler");
@@ -90,6 +90,13 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (req, res, next
         "energyAllocation": (await getEnergy(fromBrightId)).rows
     })
 });
+
+router.get('/inbound/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
+    let energy = (await getInboundEnergy(req.params.fromBrightId)).rows
+    res.json({energy})
+});
+
+
 
 router.get('/:fromBrightId', validateAuraPlayer, async function (req, res, next) {
     let energy = (await getEnergy(req.params.fromBrightId)).rows

@@ -9,7 +9,6 @@ let energyMap = new Map()
 let finalEnergy = {}
 
 async function Asyncfunction() {
-    console.log(process.env)
     await energyTeam.map(async brightId => {
         let rows = (await getEnergy(brightId)).rows
         let currentEnergy = startingEnergy;
