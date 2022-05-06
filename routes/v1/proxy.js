@@ -5,7 +5,7 @@ const {getSpecificEnergy} = require("../../src/controllers/energyController");
 const {create} = require("apisauce");
 const router = express.Router();
 
-const brightIdBaseURL = 'http://184.72.224.75'
+const brightIdBaseURL = 'https://aura-node.brightid.org'
 
 const brightIdApi = create({
     baseURL: brightIdBaseURL,
