@@ -10,13 +10,17 @@ router.get('/detail/:fromBrightId', validateAuraPlayer, async function (req, res
 
     res.json({
         events: (await getAllAfterForBrightId(timestamp, limit, fromBrightId)).rows
+            .filter(x => x.action && x.action.amount && x.action.amount !== 0)
     })
 });
 
 router.get("/general", async function (req, res, next) {
     let limit = req.query.limit ? req.query.limit : 20
     let timestamp = req.query.timestamp ? req.query.timestamp : Date.now()
+
     let rows = (await getAllAfter(timestamp, limit)).rows
+        .filter(x => x.action && x.action.amount && x.action.amount !== 0)
+
     res.json({
         events: rows
     })
