@@ -1,61 +1,53 @@
 const Process = require("process");
-const {getEnergy} = require("./src/controllers/energyController");
-require('dotenv').config()
+const { getEnergy } = require("./src/controllers/energyController");
+const {
+    addEnergyHoldings,
+} = require("./src/controllers/energyHoldingsController");
+require("dotenv").config();
 
-let energyTeam = ["xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM", "AsjAK5gJ68SMYvGfCAuROsMrJQ0_83ZS92xy94LlfIA"]
-let numberOfIterations = 3
-let startingEnergy = 100000
-let energyMap = new Map()
-let finalEnergy = {}
+let energyTeam = [
+    "xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM",
+    "AsjAK5gJ68SMYvGfCAuROsMrJQ0_83ZS92xy94LlfIA",
+];
+let numberOfIterations = 4;
+let startingEnergy = 100000;
+let energyMap = new Map();
 
 async function Asyncfunction() {
-    await energyTeam.map(async brightId => {
-        let rows = (await getEnergy(brightId)).rows
-        let currentEnergy = startingEnergy;
-        rows.forEach(row => {
-            if (row.amount === 0) {
-                return;
-            }
-            let transfer = (row.amount / startingEnergy) * 100
-            energyMap[row.toBrightId] = transfer
-            currentEnergy -= transfer
-        })
-        finalEnergy[brightId] = currentEnergy
-    })
-
-    console.log(energyMap)
+    for (const brightId of energyTeam) {
+        energyMap.set(brightId, startingEnergy);
+    }
 
     while (numberOfIterations > 0) {
-        let nextEnergy = new Map()
-        energyMap.forEach(async (v, brightId) => {
-            let rows = (await getEnergy(brightId)).rows
-            let currentEnergy = energyMap[brightId];
-            rows.forEach(row => {
-                if (row.amount === 0) {
-                    return;
-                }
-                let transfer = (row.amount / energyMap[brightId]) * 100
-                if (nextEnergy.includes(row.toBrightId)) {
-                    nextEnergy[row.toBrightId] += transfer
-                } else {
-                    nextEnergy[row.toBrightId] = transfer
-                }
-                currentEnergy -= transfer
-            })
-            finalEnergy[brightId] = currentEnergy
-            energyMap = nextEnergy
-        })
-        numberOfIterations--
+        console.log(
+            `remained iterations: ${numberOfIterations}, nodes: ${energyMap.size}`
+        );
+        const nextEnergy = new Map();
+        for (const [brightId, currentEnergy] of energyMap.entries()) {
+            if (!currentEnergy) {
+                continue;
+            }
+            let rows = (await getEnergy(brightId)).rows;
+            rows.forEach((row) => {
+                let transfer = currentEnergy * (row.amount / 100);
+                const energy = (nextEnergy.get(row.toBrightId) || 0) + transfer;
+                nextEnergy.set(row.toBrightId, energy);
+            });
+        }
+        numberOfIterations--;
+        energyMap = nextEnergy;
     }
-    finalEnergy.forEach(brightId => {
-        addEnergyHoldings(brightId)
-    })
+
+    console.log("writting results in database ...");
+    energyMap.forEach((energy, brightId) => {
+        addEnergyHoldings(brightId, parseInt(energy));
+    });
 }
 
 (async () => {
     try {
-        await Asyncfunction()
-    } catch(err) {
-        console.error(err)
+        await Asyncfunction();
+    } catch (err) {
+        console.error(err);
     }
-})()
+})();
