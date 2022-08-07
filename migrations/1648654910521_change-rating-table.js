@@ -1,32 +1,33 @@
 /* eslint-disable camelcase */
 
-exports.shorthands = undefined
+exports.shorthands = undefined;
 
-exports.up = (pgm) => {
-  pgm.dropTable('ratings')
-  pgm.createTable('ratings', {
-    id: 'id',
-    toBrightId: {
-      type: 'varchar',
-      notNull: true,
-    },
-    fromBrightId: {
-      type: 'varchar',
-      notNull: true,
-    },
-    rating: {
-      type: 'decimal',
-      notNull: true,
-    },
-    createdAt: {
-      type: 'timestamp',
-      notNull: true,
-      default: pgm.func('current_timestamp'),
-    },
-  })
+exports.up = pgm => {
+    pgm.dropTable("ratings")
 
-  pgm.createIndex('ratings', 'fromBrightId')
-  pgm.createIndex('ratings', 'toBrightId')
-}
+    pgm.createTable('ratings', {
+        id: "id",
+        toBrightId: {
+            type: 'varchar',
+            notNull: true
+        },
+        fromBrightId: {
+            type: 'varchar',
+            notNull: true
+        },
+        rating: {
+            type: 'decimal',
+            notNull: true,
+        },
+        createdAt: {
+            type: 'timestamp',
+            notNull: true,
+            default: pgm.func('current_timestamp'),
+        },
+    })
 
-exports.down = (pgm) => {}
+    pgm.createIndex("ratings", "fromBrightId")
+    pgm.createIndex("ratings", "toBrightId")
+};
+
+exports.down = pgm => {};
