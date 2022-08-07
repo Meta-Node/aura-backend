@@ -25,14 +25,14 @@ async function getEnergy(fromBrightId) {
 
 async function getInboundEnergy(toBrightId) {
   return messagesModel.pool.query(
-    'SELECT "fromBrightId", amount from "energyTransfer" WHERE "toBrightId" = $1',
+    'SELECT "fromBrightId", amount, scale from "energyTransfer" WHERE "toBrightId" = $1',
     [toBrightId],
   )
 }
 
 async function getSpecificEnergy(fromBrightId, toBrightId) {
   return messagesModel.pool.query(
-    'SELECT amount from "energyTransfer" WHERE "fromBrightId" = $1 AND "toBrightId" = $2',
+    'SELECT amount, scale from "energyTransfer" WHERE "fromBrightId" = $1 AND "toBrightId" = $2',
     [fromBrightId, toBrightId],
   )
 }
