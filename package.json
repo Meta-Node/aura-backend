@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "nodemon ./bin/www",
     "migrate": "node-pg-migrate",
     "run-migration": "PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized",
     "heroku-postbuild": "PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized"
@@ -24,6 +24,7 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
     "node-pg-migrate": "^6.2.1",
+    "nodemon": "^2.0.19",
     "pg": "^8.7.3",
     "pg-pool": "^3.4.1",
     "shuffle-seed": "^1.1.6",
