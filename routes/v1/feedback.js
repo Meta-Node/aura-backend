@@ -1,15 +1,31 @@
 const express = require('express')
 const { google } = require('googleapis')
+const { validateAuraPlayer } = require('../../src/middlewear/aurahandler')
+const { decrypt } = require('../../src/middlewear/decryption')
 
 var router = express.Router()
 
-router.post('/create', async function (req, res, next) {
+router.post('/:fromBrightId/create/', validateAuraPlayer, async function (
+  req,
+  res,
+  next,
+) {
+  let decryptedPayload
+
+  try {
+    decryptedPayload = decrypt(req.body.encryptedPayload, req.body.signingKey)
+  } catch (exception) {
+    res
+      .status(500)
+      .send('Could not decrypt using publicKey: ' + req.body.signingKey)
+  }
+
   // get feedback data
   let category
   let text
   try {
-    category = req.body.category
-    text = req.body.text
+    category = decryptedPayload.category
+    text = decryptedPayload.text
   } catch {
     res.status(400).send('Invalid json request')
   }
@@ -17,7 +33,7 @@ router.post('/create', async function (req, res, next) {
     res.status(400).send('category and text fields are required')
   }
 
-  // load auth credentials and spread sheet id
+  // load auth credentials and spreadsheet id
   credentials = JSON.parse(process.env.GOOGLE_SHEET_CREDENTIALS)
   spreadsheetId = process.env.SHEET_ID
 
@@ -33,15 +49,14 @@ router.post('/create', async function (req, res, next) {
   // Instance of Google Sheets API
   const googleSheets = google.sheets({ version: 'v4', auth })
 
+  // get title of first sheet
   let sheetMetaData = await googleSheets.spreadsheets.get({
     auth,
     spreadsheetId,
   })
-
-  // get title of first sheet
   let sheetTitle = sheetMetaData.data.sheets[0].properties.title
 
-  // append new row to cols A:B of first sheet in spread sheet
+  // append new row to cols A:B of first sheet
   googleSheets.spreadsheets.values.append({
     auth,
     spreadsheetId,
