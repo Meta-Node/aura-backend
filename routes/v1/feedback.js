@@ -23,9 +23,11 @@ router.post('/:fromBrightId/create/', validateAuraPlayer, async function (
   // get feedback data
   let category
   let text
+  let email
   try {
     category = decryptedPayload.category
     text = decryptedPayload.text
+    email = decryptedPayload.email
   } catch {
     res.status(400).send('Invalid json request')
   }
@@ -60,10 +62,10 @@ router.post('/:fromBrightId/create/', validateAuraPlayer, async function (
   googleSheets.spreadsheets.values.append({
     auth,
     spreadsheetId,
-    range: `${sheetTitle}!A:B`,
+    range: `${sheetTitle}!A:C`,
     valueInputOption: 'RAW',
     resource: {
-      values: [[category, text]],
+      values: [[category, text, email]],
     },
   })
 
