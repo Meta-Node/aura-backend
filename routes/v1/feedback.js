@@ -58,7 +58,7 @@ router.post('/:fromBrightId/create/', validateAuraPlayer, async function (
   })
   let sheetTitle = sheetMetaData.data.sheets[0].properties.title
 
-  // append new row to cols A:B of first sheet
+  // append new row to cols A:C of first sheet
   googleSheets.spreadsheets.values.append({
     auth,
     spreadsheetId,
