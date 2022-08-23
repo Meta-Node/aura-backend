@@ -59,17 +59,20 @@ router.post('/:fromBrightId/create/', validateAuraPlayer, async function (
   let sheetTitle = sheetMetaData.data.sheets[0].properties.title
 
   // append new row to cols A:C of first sheet
-  googleSheets.spreadsheets.values.append({
-    auth,
-    spreadsheetId,
-    range: `${sheetTitle}!A:C`,
-    valueInputOption: 'RAW',
-    resource: {
-      values: [[category, text, email]],
-    },
-  })
-
-  res.status(201).send()
+  try {
+    await googleSheets.spreadsheets.values.append({
+      auth,
+      spreadsheetId,
+      range: `${sheetTitle}!A:C`,
+      valueInputOption: 'RAW',
+      resource: {
+        values: [[category, text, email]],
+      },
+    })
+    res.status(201).send()
+  } catch (e) {
+    res.status(500).send('Failed to submit feedback, check input format')
+  }
 })
 
 module.exports = router
