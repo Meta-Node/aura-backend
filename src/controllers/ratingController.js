@@ -69,4 +69,5 @@ module.exports = {
   getRating,
   getAllRatingsGiven,
   getRatingsMap,
+  getRatingsReceived,
 }
