@@ -1,16 +1,16 @@
 const Process = require('process')
 const { getEnergy } = require('./src/controllers/energyController')
-const {
-  addEnergyHoldings,
-} = require('./src/controllers/energyHoldingsController')
+const { addEnergyHoldings } = require('./src/controllers/energyHoldingsController')
 require('dotenv').config()
 
-let energyTeam = [
+const energyTeam = [
   'xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM',
   'AsjAK5gJ68SMYvGfCAuROsMrJQ0_83ZS92xy94LlfIA',
 ]
-let numberOfIterations = 4
-let startingEnergy = 100000
+const startingEnergy = 100000;
+const hops = 4;
+
+let hopsLeft = hops;
 let energyMap = new Map()
 
 async function Asyncfunction() {
@@ -18,9 +18,9 @@ async function Asyncfunction() {
     energyMap.set(brightId, startingEnergy)
   }
 
-  while (numberOfIterations > 0) {
+  while (hopsLeft) {
     console.log(
-      `remained iterations: ${numberOfIterations}, nodes: ${energyMap.size}`,
+      `Remaining hops: ${hopsLeft}. Nodes: ${energyMap.size}`,
     )
     const nextEnergy = new Map()
     for (const [brightId, currentEnergy] of energyMap.entries()) {
@@ -34,14 +34,16 @@ async function Asyncfunction() {
         nextEnergy.set(row.toBrightId, energy)
       })
     }
-    numberOfIterations--
+    --hopsLeft;
     energyMap = nextEnergy
   }
 
-  console.log('writting results in database ...')
+  console.log('Writing results to database ...')
   energyMap.forEach((energy, brightId) => {
     addEnergyHoldings(brightId, parseInt(energy))
   })
+  console.log('Writing results to BrightID node');
+
 }
 
 ;(async () => {
