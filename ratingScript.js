@@ -1,7 +1,13 @@
-const Process = require('process')
+const { Database } = require("arangojs");
 const { getEnergy } = require('./src/controllers/energyController')
 const { addEnergyHoldings } = require('./src/controllers/energyHoldingsController')
 require('dotenv').config()
+
+const arango = new Database({
+  url: process.env.DB_URL,
+});
+
+const users = arango.collection("users");
 
 const energyTeam = [
   'xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM',
@@ -38,12 +44,21 @@ async function Asyncfunction() {
     energyMap = nextEnergy
   }
 
-  console.log('Writing results to database ...')
+  console.log('Writing results to database.')
   energyMap.forEach((energy, brightId) => {
     addEnergyHoldings(brightId, parseInt(energy))
   })
-  console.log('Writing results to BrightID node');
-
+  console.log('Writing results to BrightID node.');
+  let updates = [];
+  energyMap.forEach((energy, brightId) => {
+    updates.push({
+      "_key": brightId,
+      energy
+    })
+  });
+  console.log(updates);
+  await users.updateAll(updates);
+  console.log('Done.');
 }
 
 ;(async () => {
