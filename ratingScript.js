@@ -1,6 +1,7 @@
 const { Database } = require("arangojs");
 const { getEnergy } = require('./src/controllers/energyController')
 const { addEnergyHoldings } = require('./src/controllers/energyHoldingsController')
+const { allRatings } = require('./src/controllers/ratingController');
 require('dotenv').config()
 
 const arango = new Database({
@@ -8,6 +9,7 @@ const arango = new Database({
 });
 
 const users = arango.collection("users");
+const connections = arango.collection("connections");
 
 const energyTeam = [
   'xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM',
@@ -44,11 +46,11 @@ async function Asyncfunction() {
     energyMap = nextEnergy
   }
 
-  console.log('Writing results to database.')
+  console.log('Writing energy to postgres.')
   energyMap.forEach((energy, brightId) => {
     addEnergyHoldings(brightId, parseInt(energy))
   })
-  console.log('Writing results to BrightID node.');
+  console.log('Writing energy to BrightID node.');
   let updates = [];
   energyMap.forEach((energy, brightId) => {
     updates.push({
@@ -58,7 +60,23 @@ async function Asyncfunction() {
   });
   console.log(updates);
   await users.updateAll(updates);
-  console.log('Done.');
+  console.log('Done writing energy.');
+
+  console.log('Reading honesty ratings from postgres.');
+  let honesty = await allRatings();
+  updates = [];
+  honesty.rows.forEach((row) => {
+    updates.push({
+      "_from": `users/${row.fromBrightId}`,
+      "_to": `users/${row.toBrightId}`,
+      "honesty": row.rating
+    });
+  })
+  console.log('Writing honesty ratings to BrightID node.');
+  await connections.import(updates, {
+    "onDuplicate": "update"
+  });
+  console.log('Done writing honesty ratings.');
 }
 
 ;(async () => {
