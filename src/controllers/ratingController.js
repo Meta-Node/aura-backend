@@ -1,50 +1,47 @@
 const Model = require('../models/model')
-const { values } = require('pg/lib/native/query')
-const messagesModel = new Model('ratings')
+const ratings = new Model('ratings')
 
-async function getRatings(brightId) {
-  return await messagesModel.select(
-    'score',
-    ` WHERE ratings.brightid = '${brightId}'`,
-  )
-}
+// async function getRatings(brightId) {
+//   return await ratings.select(
+//     'score',
+//     ` WHERE ratings.brightid = '${brightId}'`,
+//   )
+// }
 
 async function getConnectionsRated(brightId) {
-  return messagesModel.pool.query(
+  return ratings.pool.query(
     'SELECT "toBrightId" from ratings WHERE "fromBrightId" = $1',
     [brightId],
   )
 }
 
 function rateConnection(fromBrightId, toBrightId, rating) {
-  return messagesModel.pool.query(
+  return ratings.pool.query(
     'Insert into "ratings"("fromBrightId", "toBrightId", "rating") values ($1, $2, $3) ON CONFLICT ("fromBrightId", "toBrightId") DO UPDATE SET "rating" = $3, "updatedAt" = current_timestamp',
     [fromBrightId, toBrightId, rating],
   )
 }
 
 function getNumberOfRatingsGiven(fromBightId) {
-  return messagesModel.countRatingsGiven(fromBightId)
+  return ratings.countRatingsGiven(fromBightId)
 }
 
 function getRating(fromBrightId, toBrightId) {
-  return messagesModel.pool.query(
+  return ratings.pool.query(
     'SELECT * from "ratings" WHERE "fromBrightId" = $1 AND "toBrightId" = $2',
     [fromBrightId, toBrightId],
   )
 }
 
 async function getRatingsReceived(brightId) {
-  let ratings = await messagesModel.pool.query(
+  return ratings.pool.query(
     'SELECT * from "ratings" WHERE "toBrightId" = $1',
     [brightId],
   )
-
-  return ratings
 }
 
 async function getAllRatingsGiven(brightId) {
-  return messagesModel.pool.query(
+  return ratings.pool.query(
     'SELECT * from "ratings" WHERE "fromBrightId" = $1',
     [brightId],
   )
@@ -60,7 +57,11 @@ async function getRatingsMap(brightId) {
   return map
 }
 
-function calculateRating(fromBrightId) {}
+async function allRatings() {
+  return ratings.pool.query(
+    'SELECT "fromBrightId", "toBrightId", "rating" from "ratings"'
+  );
+}
 
 module.exports = {
   getConnectionsRated,
@@ -70,4 +71,5 @@ module.exports = {
   getAllRatingsGiven,
   getRatingsMap,
   getRatingsReceived,
+  allRatings,
 }
