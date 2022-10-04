@@ -69,7 +69,7 @@ async function Asyncfunction() {
     updates.push({
       "_from": `users/${row.fromBrightId}`,
       "_to": `users/${row.toBrightId}`,
-      "honesty": row.rating
+      "honesty": Number(row.rating)
     });
   })
   console.log('Writing honesty ratings to BrightID node.');
