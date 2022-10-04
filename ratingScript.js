@@ -9,7 +9,7 @@ const arango = new Database({
 });
 
 const users = arango.collection("users");
-const connections = arango.collection("connections");
+const honesty = arango.collection("honesty");
 
 const energyTeam = [
   'xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM',
@@ -63,9 +63,9 @@ async function Asyncfunction() {
   console.log('Done writing energy.');
 
   console.log('Reading honesty ratings from postgres.');
-  let honesty = await allRatings();
+  let honestyRatings = await allRatings();
   updates = [];
-  honesty.rows.forEach((row) => {
+  honestyRatings.rows.forEach((row) => {
     updates.push({
       "_from": `users/${row.fromBrightId}`,
       "_to": `users/${row.toBrightId}`,
@@ -73,8 +73,8 @@ async function Asyncfunction() {
     });
   })
   console.log('Writing honesty ratings to BrightID node.');
-  await connections.import(updates, {
-    "onDuplicate": "update"
+  await honesty.import(updates, {
+    "overwrite": true
   });
   console.log('Done writing honesty ratings.');
 }
