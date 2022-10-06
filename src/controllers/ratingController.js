@@ -1,12 +1,14 @@
+const { Database , aql } = require("arangojs");
 const Model = require('../models/model')
 const ratings = new Model('ratings')
 
-// async function getRatings(brightId) {
-//   return await ratings.select(
-//     'score',
-//     ` WHERE ratings.brightid = '${brightId}'`,
-//   )
-// }
+require('dotenv').config();
+
+const arango = new Database({
+  url: process.env.DB_URL,
+});
+
+const honesty = arango.collection("honesty");
 
 async function getConnectionsRated(brightId) {
   return ratings.pool.query(
@@ -15,15 +17,17 @@ async function getConnectionsRated(brightId) {
   )
 }
 
-function rateConnection(fromBrightId, toBrightId, rating) {
+async function rateConnection(from, to, honestyRating) {
+  await arango.query(aql`
+    upsert { _to: $to, _from: $from }
+    insert { _to: $to, _from: $from, modified: DATE_NOW(), honesty: $honestyRating }
+    update { modified: DATE_NOW(), honesty: $honestyRating }
+    in $honesty
+  `);
   return ratings.pool.query(
     'Insert into "ratings"("fromBrightId", "toBrightId", "rating") values ($1, $2, $3) ON CONFLICT ("fromBrightId", "toBrightId") DO UPDATE SET "rating" = $3, "updatedAt" = current_timestamp',
-    [fromBrightId, toBrightId, rating],
+    [from, to, honestyRating],
   )
-}
-
-function getNumberOfRatingsGiven(fromBightId) {
-  return ratings.countRatingsGiven(fromBightId)
 }
 
 function getRating(fromBrightId, toBrightId) {
@@ -66,7 +70,6 @@ async function allRatings() {
 module.exports = {
   getConnectionsRated,
   rateConnection,
-  getNumberOfRatingsGiven,
   getRating,
   getAllRatingsGiven,
   getRatingsMap,
