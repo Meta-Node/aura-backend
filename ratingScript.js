@@ -1,6 +1,6 @@
 const { Database } = require("arangojs");
 const { getEnergy } = require('./src/controllers/energyAllocationController')
-const { addEnergyHoldings } = require('./src/controllers/energyController')
+const { addEnergy } = require('./src/controllers/energyController')
 const { allRatings } = require('./src/controllers/ratingController');
 require('dotenv').config()
 
@@ -48,7 +48,7 @@ async function Asyncfunction() {
 
   console.log('Writing energy to postgres.')
   energyMap.forEach((energy, brightId) => {
-    addEnergyHoldings(brightId, parseInt(energy))
+    addEnergy(brightId, parseInt(energy))
   })
   console.log('Writing energy to BrightID node.');
   let updates = [];
