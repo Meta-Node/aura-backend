@@ -1,7 +1,7 @@
 const express = require('express');
 const {getConnection} = require("../../src/controllers/connectionController");
 const {getRating} = require("../../src/controllers/ratingController");
-const {getSpecificEnergy} = require("../../src/controllers/energyController");
+const {getSpecificEnergy} = require("../../src/controllers/energyAllocationController");
 const {create} = require("apisauce");
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 const { Database } = require("arangojs");
-const { getEnergy } = require('./src/controllers/energyController')
-const { addEnergyHoldings } = require('./src/controllers/energyHoldingsController')
+const { getEnergy } = require('./src/controllers/energyAllocationController')
+const { addEnergyHoldings } = require('./src/controllers/energyController')
 const { allRatings } = require('./src/controllers/ratingController');
 require('dotenv').config()
 

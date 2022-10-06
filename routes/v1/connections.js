@@ -1,7 +1,7 @@
 var express = require('express');
 const {getConnection, getConnections, get4Unrated} = require("../../src/controllers/connectionController");
 const {getRating, getConnectionsRated} = require("../../src/controllers/ratingController");
-const {getSpecificEnergy} = require("../../src/controllers/energyController");
+const {getSpecificEnergy} = require("../../src/controllers/energyAllocationController");
 const shuffleSeed = require('shuffle-seed');
 var router = express.Router();
 

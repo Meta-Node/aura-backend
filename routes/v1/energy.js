@@ -4,11 +4,11 @@ const crypto = require('crypto-js')
 const { getSigningKey } = require('../../src/controllers/brightIdController')
 const Utf8 = require('crypto-js/enc-utf8')
 const {
-  addEnergyTransfer,
+  allocateEnergy,
   clearEnergyForBrightId,
   getEnergy,
   getInboundEnergy,
-} = require('../../src/controllers/energyController')
+} = require('../../src/controllers/energyAllocationController')
 const { persistToLog } = require('../../src/controllers/activityLogController')
 const { json } = require('express')
 const { validateAuraPlayer } = require('../../src/middlewear/aurahandler')
@@ -92,7 +92,7 @@ router.post('/:fromBrightId', validateAuraPlayer, async function (
   await clearEnergyForBrightId(fromBrightId)
   decryptedJson.transfers.forEach((transfer) => {
     promises.push(
-      addEnergyTransfer(
+      allocateEnergy(
         transfer.toBrightId,
         fromBrightId,
         transfer.amount,
