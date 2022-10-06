@@ -1,12 +1,7 @@
-const { Database , aql } = require("arangojs");
+const { aql } = require("arangojs");
+const { arango } = require("../models/pool.js");
 const Model = require('../models/model')
 const ratings = new Model('ratings')
-
-require('dotenv').config();
-
-const arango = new Database({
-  url: process.env.DB_URL,
-});
 
 const honesty = arango.collection("honesty");
 
