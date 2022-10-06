@@ -18,9 +18,11 @@ async function getConnectionsRated(brightId) {
 }
 
 async function rateConnection(from, to, honestyRating) {
+  const userFrom = 'users/' + from;
+  const userTo = 'users/' + to;
   await arango.query(aql`
-    upsert { _to: users/${to}, _from: users/${from} }
-    insert { _to: users/${to}, _from: users/${from}, modified: DATE_NOW(), honesty: ${honestyRating} }
+    upsert { _to: ${userTo}, _from: ${userFrom} }
+    insert { _to: ${userTo}, _from: ${userFrom}, modified: DATE_NOW(), honesty: ${honestyRating} }
     update { modified: DATE_NOW(), honesty: ${honestyRating} }
     in ${honesty}
   `);
