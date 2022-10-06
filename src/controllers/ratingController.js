@@ -19,10 +19,10 @@ async function getConnectionsRated(brightId) {
 
 async function rateConnection(from, to, honestyRating) {
   await arango.query(aql`
-    upsert { _to: $to, _from: $from }
-    insert { _to: $to, _from: $from, modified: DATE_NOW(), honesty: $honestyRating }
-    update { modified: DATE_NOW(), honesty: $honestyRating }
-    in $honesty
+    upsert { _to: ${to}, _from: ${from} }
+    insert { _to: ${to}, _from: ${from}, modified: DATE_NOW(), honesty: ${honestyRating} }
+    update { modified: DATE_NOW(), honesty: ${honestyRating} }
+    in ${honesty}
   `);
   return ratings.pool.query(
     'Insert into "ratings"("fromBrightId", "toBrightId", "rating") values ($1, $2, $3) ON CONFLICT ("fromBrightId", "toBrightId") DO UPDATE SET "rating" = $3, "updatedAt" = current_timestamp',
