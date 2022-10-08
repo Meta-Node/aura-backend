@@ -1,6 +1,10 @@
 const Model = require('../models/model')
-const { values } = require('pg/lib/native/query')
 const messagesModel = new Model('energyTransfer')
+
+const { aql } = require("arangojs");
+const { arango } = require("../models/pool.js");
+
+const energy = arango.collection("energy");
 
 async function clearEnergyForBrightId(brightId) {
   return messagesModel.pool.query(
@@ -9,10 +13,19 @@ async function clearEnergyForBrightId(brightId) {
   )
 }
 
-async function allocateEnergy(toBrightId, fromBrightId, amount, scale) {
+async function allocateEnergy(to, from, amount, scale) {
+  const userFrom = 'users/' + from;
+  const userTo = 'users/' + to;
+  await arango.query(aql`
+    upsert { _to: ${userTo}, _from: ${userFrom} }
+    insert { _to: ${userTo}, _from: ${userFrom}, energy: ${amount} }
+    update { modified: DATE_NOW(), energy: ${amount} }
+    in ${energy}
+  `);
+
   return messagesModel.pool.query(
     'Insert into "energyTransfer"("fromBrightId", "toBrightId", "amount", "scale") values ($1, $2, $3, $4)',
-    [fromBrightId, toBrightId, amount, scale],
+    [from, to, amount, scale],
   )
 }
 
