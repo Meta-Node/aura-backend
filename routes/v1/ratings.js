@@ -10,7 +10,7 @@ const { persistToLog } = require('../../src/controllers/activityLogController')
 const { decrypt } = require('../../src/middlewear/decryption')
 const {
   resetRatingForConnectionPostRating,
-} = require('../../src/controllers/energyController')
+} = require('../../src/controllers/energyAllocationController')
 
 var router = express.Router()
 
