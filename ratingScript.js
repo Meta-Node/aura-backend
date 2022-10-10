@@ -14,7 +14,7 @@ const energyTeam = [
   'xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM',
   'AsjAK5gJ68SMYvGfCAuROsMrJQ0_83ZS92xy94LlfIA',
 ]
-const startingEnergy = 100000;
+const startingEnergy = 10000000;
 const hops = 4;
 
 let hopsLeft = hops;
