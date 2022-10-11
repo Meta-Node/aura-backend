@@ -20,14 +20,16 @@ async function clearEnergyForBrightId(brightId) {
 }
 
 async function allocateEnergy(to, from, amount, scale) {
-  const userFrom = 'users/' + from;
-  const userTo = 'users/' + to;
-  await arango.query(aql`
-    upsert { _to: ${userTo}, _from: ${userFrom} }
-    insert { _to: ${userTo}, _from: ${userFrom}, allocation: ${amount} }
-    update { modified: DATE_NOW(), allocation: ${amount} }
-    in ${energyAllocation}
-  `);
+  if (amount > 0) {
+    const userFrom = 'users/' + from;
+    const userTo = 'users/' + to;
+    await arango.query(aql`
+      upsert { _to: ${userTo}, _from: ${userFrom} }
+      insert { _to: ${userTo}, _from: ${userFrom}, allocation: ${amount}, modified: DATE_NOW() }
+      update { modified: DATE_NOW(), allocation: ${amount} }
+      in ${energyAllocation}
+    `);
+  }
 
   return messagesModel.pool.query(
     'Insert into "energyTransfer"("fromBrightId", "toBrightId", "amount", "scale") values ($1, $2, $3, $4)',
