@@ -4,9 +4,15 @@ const messagesModel = new Model('energyTransfer')
 const { aql } = require("arangojs");
 const { arango } = require("../models/pool.js");
 
-const energy = arango.collection("energy");
+const energyAllocation = arango.collection("energyAllocation");
 
 async function clearEnergyForBrightId(brightId) {
+  const userFrom = 'users/' + brightId;
+  await arango.query(aql`
+    for e in energyAllocation
+      filter e._from = ${userFrom}
+      remove e in energyAllocation
+  `);
   return messagesModel.pool.query(
     'DELETE from "energyTransfer" where "fromBrightId" = $1',
     [brightId],
@@ -18,9 +24,9 @@ async function allocateEnergy(to, from, amount, scale) {
   const userTo = 'users/' + to;
   await arango.query(aql`
     upsert { _to: ${userTo}, _from: ${userFrom} }
-    insert { _to: ${userTo}, _from: ${userFrom}, energy: ${amount} }
-    update { modified: DATE_NOW(), energy: ${amount} }
-    in ${energy}
+    insert { _to: ${userTo}, _from: ${userFrom}, allocation: ${amount} }
+    update { modified: DATE_NOW(), allocation: ${amount} }
+    in ${energyAllocation}
   `);
 
   return messagesModel.pool.query(

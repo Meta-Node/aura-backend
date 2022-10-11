@@ -7,7 +7,7 @@ const arango = new Database({
   url: process.env.DB_URL,
 });
 
-const users = arango.collection("users");
+const energy = arango.collection("energy");
 const honesty = arango.collection("honesty");
 
 const energyTeam = [
@@ -54,7 +54,9 @@ async function Asyncfunction() {
     })
   });
   console.log(updates);
-  await users.updateAll(updates);
+  await energy.import(updates, {
+    "overwrite": true
+  });
   console.log('Done writing energy.');
 
   console.log('Reading honesty ratings from postgres.');
