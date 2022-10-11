@@ -9,9 +9,9 @@ const energyAllocation = arango.collection("energyAllocation");
 async function clearEnergyForBrightId(brightId) {
   const userFrom = 'users/' + brightId;
   await arango.query(aql`
-    for e in energyAllocation
+    for e in ${energyAllocation}
       filter e._from = ${userFrom}
-      remove e in energyAllocation
+      remove e in ${energyAllocation}
   `);
   return messagesModel.pool.query(
     'DELETE from "energyTransfer" where "fromBrightId" = $1',
