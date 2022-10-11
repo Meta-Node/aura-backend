@@ -10,7 +10,7 @@ async function clearEnergyForBrightId(brightId) {
   const userFrom = 'users/' + brightId;
   await arango.query(aql`
     for e in ${energyAllocation}
-      filter e._from = ${userFrom}
+      filter e._from == ${userFrom}
       remove e in ${energyAllocation}
   `);
   return messagesModel.pool.query(
