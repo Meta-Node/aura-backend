@@ -7,7 +7,7 @@ const { arango } = require("../models/pool.js");
 const energyAllocation = arango.collection("energyAllocation");
 
 async function clearEnergyForBrightId(brightId) {
-  const userFrom = 'users/' + brightId;
+  const userFrom = 'energy/' + brightId;
   await arango.query(aql`
     for e in ${energyAllocation}
       filter e._from == ${userFrom}
@@ -21,8 +21,8 @@ async function clearEnergyForBrightId(brightId) {
 
 async function allocateEnergy(to, from, amount, scale) {
   if (amount > 0) {
-    const userFrom = 'users/' + from;
-    const userTo = 'users/' + to;
+    const userFrom = 'energy/' + from;
+    const userTo = 'energy/' + to;
     await arango.query(aql`
       upsert { _to: ${userTo}, _from: ${userFrom} }
       insert { _to: ${userTo}, _from: ${userFrom}, allocation: ${amount}, modified: DATE_NOW() }
