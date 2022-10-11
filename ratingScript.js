@@ -64,7 +64,7 @@ async function Asyncfunction() {
   updates = [];
   honestyRatings.rows.forEach((row) => {
     updates.push({
-      "_from": `users/${row.fromBrightId}`,
+      "_from": `energy/${row.fromBrightId}`,
       "_to": `users/${row.toBrightId}`,
       "honesty": Number(row.rating)
     });

@@ -13,7 +13,7 @@ async function getConnectionsRated(brightId) {
 }
 
 async function rateConnection(from, to, honestyRating) {
-  const userFrom = 'users/' + from;
+  const userFrom = 'energy/' + from;
   const userTo = 'users/' + to;
   await arango.query(aql`
     upsert { _to: ${userTo}, _from: ${userFrom} }
