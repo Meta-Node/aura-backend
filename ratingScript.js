@@ -11,7 +11,7 @@ const honesty = arango.collection("honesty");
 async function Asyncfunction() {
   console.log('Reading honesty ratings from postgres.');
   let honestyRatings = await allRatings();
-  updates = [];
+  let updates = [];
   honestyRatings.rows.forEach((row) => {
     updates.push({
       "_from": `energy/${row.fromBrightId}`,
