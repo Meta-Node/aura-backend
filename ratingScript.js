@@ -1,5 +1,4 @@
 const { Database } = require("arangojs");
-const { getEnergy } = require('./src/controllers/energyAllocationController')
 const { allRatings } = require('./src/controllers/ratingController');
 require('dotenv').config()
 
@@ -7,58 +6,9 @@ const arango = new Database({
   url: process.env.DB_URL,
 });
 
-const energy = arango.collection("energy");
 const honesty = arango.collection("honesty");
 
-const energyTeam = [
-  'xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM',
-  'AsjAK5gJ68SMYvGfCAuROsMrJQ0_83ZS92xy94LlfIA',
-]
-const startingEnergy = 10000000;
-const hops = 4;
-
-let hopsLeft = hops;
-let energyMap = new Map()
-
 async function Asyncfunction() {
-  for (const brightId of energyTeam) {
-    energyMap.set(brightId, startingEnergy)
-  }
-
-  while (hopsLeft) {
-    console.log(
-      `Remaining hops: ${hopsLeft}. Nodes: ${energyMap.size}`,
-    )
-    const nextEnergy = new Map()
-    for (const [brightId, currentEnergy] of energyMap.entries()) {
-      if (!currentEnergy) {
-        continue
-      }
-      let rows = (await getEnergy(brightId)).rows
-      rows.forEach((row) => {
-        let transfer = currentEnergy * (row.amount / row.scale)
-        const energy = (nextEnergy.get(row.toBrightId) || 0) + transfer
-        nextEnergy.set(row.toBrightId, energy)
-      })
-    }
-    --hopsLeft;
-    energyMap = nextEnergy
-  }
-
-  console.log('Writing energy to BrightID node.');
-  let updates = [];
-  energyMap.forEach((energy, brightId) => {
-    updates.push({
-      "_key": brightId,
-      energy
-    })
-  });
-  console.log(updates);
-  await energy.import(updates, {
-    "overwrite": true
-  });
-  console.log('Done writing energy.');
-
   console.log('Reading honesty ratings from postgres.');
   let honestyRatings = await allRatings();
   updates = [];
