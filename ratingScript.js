@@ -1,16 +1,23 @@
-const Process = require('process')
-const { getEnergy } = require('./src/controllers/energyController')
-const {
-  addEnergyHoldings,
-} = require('./src/controllers/energyHoldingsController')
+const { Database } = require("arangojs");
+const { getEnergy } = require('./src/controllers/energyAllocationController')
+const { allRatings } = require('./src/controllers/ratingController');
 require('dotenv').config()
 
-let energyTeam = [
+const arango = new Database({
+  url: process.env.DB_URL,
+});
+
+const energy = arango.collection("energy");
+const honesty = arango.collection("honesty");
+
+const energyTeam = [
   'xqmMHQMnBdakxs3sXXjy7qVqPoXmhhwOt4c_z1tSPwM',
   'AsjAK5gJ68SMYvGfCAuROsMrJQ0_83ZS92xy94LlfIA',
 ]
-let numberOfIterations = 4
-let startingEnergy = 100000
+const startingEnergy = 10000000;
+const hops = 4;
+
+let hopsLeft = hops;
 let energyMap = new Map()
 
 async function Asyncfunction() {
@@ -18,9 +25,9 @@ async function Asyncfunction() {
     energyMap.set(brightId, startingEnergy)
   }
 
-  while (numberOfIterations > 0) {
+  while (hopsLeft) {
     console.log(
-      `remained iterations: ${numberOfIterations}, nodes: ${energyMap.size}`,
+      `Remaining hops: ${hopsLeft}. Nodes: ${energyMap.size}`,
     )
     const nextEnergy = new Map()
     for (const [brightId, currentEnergy] of energyMap.entries()) {
@@ -34,14 +41,39 @@ async function Asyncfunction() {
         nextEnergy.set(row.toBrightId, energy)
       })
     }
-    numberOfIterations--
+    --hopsLeft;
     energyMap = nextEnergy
   }
 
-  console.log('writting results in database ...')
+  console.log('Writing energy to BrightID node.');
+  let updates = [];
   energyMap.forEach((energy, brightId) => {
-    addEnergyHoldings(brightId, parseInt(energy))
+    updates.push({
+      "_key": brightId,
+      energy
+    })
+  });
+  console.log(updates);
+  await energy.import(updates, {
+    "overwrite": true
+  });
+  console.log('Done writing energy.');
+
+  console.log('Reading honesty ratings from postgres.');
+  let honestyRatings = await allRatings();
+  updates = [];
+  honestyRatings.rows.forEach((row) => {
+    updates.push({
+      "_from": `energy/${row.fromBrightId}`,
+      "_to": `users/${row.toBrightId}`,
+      "honesty": Number(row.rating)
+    });
   })
+  console.log('Writing honesty ratings to BrightID node.');
+  await honesty.import(updates, {
+    "overwrite": true
+  });
+  console.log('Done writing honesty ratings.');
 }
 
 ;(async () => {

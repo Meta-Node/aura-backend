@@ -1,18 +1,39 @@
 const Model = require('../models/model')
-const { values } = require('pg/lib/native/query')
 const messagesModel = new Model('energyTransfer')
 
+const { aql } = require("arangojs");
+const { arango } = require("../models/pool.js");
+
+const energyAllocation = arango.collection("energyAllocation");
+
 async function clearEnergyForBrightId(brightId) {
+  const userFrom = 'energy/' + brightId;
+  await arango.query(aql`
+    for e in ${energyAllocation}
+      filter e._from == ${userFrom}
+      remove e in ${energyAllocation}
+  `);
   return messagesModel.pool.query(
     'DELETE from "energyTransfer" where "fromBrightId" = $1',
     [brightId],
   )
 }
 
-async function addEnergyTransfer(toBrightId, fromBrightId, amount, scale) {
+async function allocateEnergy(to, from, amount, scale) {
+  if (amount > 0) {
+    const userFrom = 'energy/' + from;
+    const userTo = 'energy/' + to;
+    await arango.query(aql`
+      upsert { _to: ${userTo}, _from: ${userFrom} }
+      insert { _to: ${userTo}, _from: ${userFrom}, allocation: ${amount}, modified: DATE_NOW() }
+      update { modified: DATE_NOW(), allocation: ${amount} }
+      in ${energyAllocation}
+    `);
+  }
+
   return messagesModel.pool.query(
     'Insert into "energyTransfer"("fromBrightId", "toBrightId", "amount", "scale") values ($1, $2, $3, $4)',
-    [fromBrightId, toBrightId, amount, scale],
+    [from, to, amount, scale],
   )
 }
 
@@ -46,7 +67,7 @@ async function resetRatingForConnectionPostRating(fromBrightId, toBrightId) {
 
 module.exports = {
   clearEnergyForBrightId,
-  addEnergyTransfer,
+  allocateEnergy,
   getEnergy,
   getSpecificEnergy,
   resetRatingForConnectionPostRating,
