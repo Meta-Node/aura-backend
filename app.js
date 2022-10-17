@@ -25,6 +25,8 @@ const {
 const { clientErrorHandler } = require('./src/middlewear/aurahandler')
 var app = express()
 
+app.use(express.json({limit: '10mb'}));
+app.use(express.urlencoded({limit: '10mb'}));
 app.use(logger('dev'))
 app.use(express.json())
 app.use(boolParser())
