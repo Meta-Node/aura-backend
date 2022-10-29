@@ -21,11 +21,11 @@ async function clearEnergyForBrightId(brightId) {
 
 async function allocateEnergy(to, from, amount, scale) {
   if (amount > 0) {
-    const userFrom = 'energy/' + from;
-    const userTo = 'energy/' + to;
+    const energyFrom = 'energy/' + from;
+    const energyTo = 'energy/' + to;
     await arango.query(aql`
-      upsert { _to: ${userTo}, _from: ${userFrom} }
-      insert { _to: ${userTo}, _from: ${userFrom}, allocation: ${amount}, modified: DATE_NOW() }
+      upsert { _to: ${energyTo}, _from: ${energyFrom} }
+      insert { _to: ${energyTo}, _from: ${energyFrom}, allocation: ${amount}, modified: DATE_NOW() }
       update { modified: DATE_NOW(), allocation: ${amount} }
       in ${energyAllocation}
     `);
@@ -58,7 +58,7 @@ async function getSpecificEnergy(fromBrightId, toBrightId) {
   )
 }
 
-async function resetRatingForConnectionPostRating(fromBrightId, toBrightId) {
+async function deleteEnergyAllocation(fromBrightId, toBrightId) {
   return messagesModel.pool.query(
     'DELETE from "energyTransfer" where "fromBrightId" = $1 AND "toBrightId" = $2',
     [fromBrightId, toBrightId],
@@ -70,6 +70,6 @@ module.exports = {
   allocateEnergy,
   getEnergy,
   getSpecificEnergy,
-  resetRatingForConnectionPostRating,
+  deleteEnergyAllocation,
   getInboundEnergy,
 }
