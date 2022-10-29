@@ -8,9 +8,6 @@ const {
 const { validateAuraPlayer } = require('../../src/middlewear/aurahandler')
 const { persistToLog } = require('../../src/controllers/activityLogController')
 const { decrypt } = require('../../src/middlewear/decryption')
-const {
-  resetRatingForConnectionPostRating,
-} = require('../../src/controllers/energyAllocationController')
 
 var router = express.Router()
 
@@ -34,12 +31,11 @@ router.post('/:fromBrightId/:toBrightId', validateAuraPlayer, async function (
   } catch (exception) {
     return res.status(500).send(exception.toString())
   }
-  await resetRatingForConnectionPostRating(fromBrightId, toBrightId)
   await rateConnection(fromBrightId, toBrightId, rating)
-  await persistToLog(fromBrightId, toBrightId, {
-    action: 'RATED_CONNECTION',
-    amount: rating,
-  })
+  // await persistToLog(fromBrightId, toBrightId, {
+  //   action: 'RATED_CONNECTION',
+  //   amount: rating,
+  // })
   res.send()
 })
 
