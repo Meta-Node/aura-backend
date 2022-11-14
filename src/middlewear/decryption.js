@@ -12,6 +12,7 @@ function decrypt(encryptedData, publicKey) {
   if (decoded === undefined || decoded === null) {
     throw new Error('Could not decode data')
   }
+
   return JSON.parse(utf8Encode.decode(decoded))
 }
 
