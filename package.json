@@ -9,6 +9,8 @@
     "heroku-postbuild": "PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized"
   },
   "dependencies": {
+    "@sentry/node": "^7.19.0",
+    "@sentry/tracing": "^7.19.0",
     "apisauce": "^2.1.5",
     "arangojs": "^7.6.1",
     "axios": "^0.21.1",
