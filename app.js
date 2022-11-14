@@ -14,6 +14,7 @@ const profileRouter = require('./routes/v1/profile')
 const nicknameRouter = require('./routes/v1/nicknames')
 const publicRouter = require('./routes/v1/oracle')
 const feedbackRouter = require('./routes/v1/feedback')
+const energyRequestRouter = require('./routes/v1/energyRequest')
 
 var boolParser = require('express-query-boolean')
 const { json } = require('express')
@@ -25,8 +26,8 @@ const {
 const { clientErrorHandler } = require('./src/middlewear/aurahandler')
 var app = express()
 
-app.use(express.json({limit: '10mb'}));
-app.use(express.urlencoded({limit: '10mb'}));
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ limit: '10mb' }))
 app.use(logger('dev'))
 app.use(express.json())
 app.use(boolParser())
@@ -45,5 +46,6 @@ app.use('/v1/profile', profileRouter)
 app.use('/v1/nickname', nicknameRouter)
 app.use('/v1/public', publicRouter)
 app.use('/v1/feedback', feedbackRouter)
+app.use('/v1/energyRequest', energyRequestRouter)
 
 module.exports = app

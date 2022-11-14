@@ -5,8 +5,9 @@
   "scripts": {
     "start": "nodemon ./bin/www",
     "migrate": "node-pg-migrate",
-    "run-migration": "PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized",
-    "heroku-postbuild": "PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized"
+    "run-migration": "PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized --no-check-order",
+    "heroku-postbuild": "PGSSLMODE=require node-pg-migrate up --no-reject-unauthorized --no-check-order",
+    "run-migration-local": "node-pg-migrate up --no-check-order"
   },
   "dependencies": {
     "apisauce": "^2.1.5",
